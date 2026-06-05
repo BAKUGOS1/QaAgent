@@ -4,19 +4,22 @@ Use this skill when the user asks Codex to test a website, CRM flow, lead creati
 
 ## Workflow
 
-1. Understand the user task.
-2. Confirm safety scope internally. Destructive actions are blocked unless the task explicitly allows them.
-3. Run:
+1. Read the user task and identify website, module, profile, safety scope, and needed test data.
+2. Create or update a task JSON when the flow needs explicit steps.
+3. Use credentials from `.env.local` env refs only. Never paste secrets into task JSON.
+4. Confirm safety scope internally. Destructive actions are blocked unless the task explicitly allows them.
+5. Run:
 
 ```bash
 npm run agent:codex -- --task-file <task-file> --headed
 ```
 
-4. Inspect the generated markdown report in `agent/reports/`.
-5. Inspect screenshots in `agent/artifacts/screenshots/` and logs in `agent/artifacts/logs/` if needed.
-6. Improve selectors or task steps when a flow needs more precise automation.
-7. Re-run failed flows.
-8. Produce a final developer-ready bug report.
+6. Inspect generated reports in `agent/reports/`.
+7. Inspect screenshots in `agent/artifacts/screenshots/`, logs in `agent/artifacts/logs/`, and state in `agent/artifacts/state/latest-browser-state.json`.
+8. Use indexed clickable elements from browser state to decide better selectors.
+9. Add explicit task steps when needed.
+10. Re-run focused tests.
+11. Produce a final developer-ready bug report.
 
 ## Report Style
 
@@ -28,6 +31,8 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Generate Markdown, JSON, and Excel only. Do not generate CSV.
 - Excel reports must embed screenshots/images in the workbook when screenshots exist.
 - Do not push reports, screenshots, logs, traces, or `.env` files to GitHub.
+- Use browser state indexes when selector guessing is uncertain.
+- Keep Codex/no-API and Groq/API modes working.
 
 ## Rules
 
@@ -42,5 +47,7 @@ npm run agent:codex -- --task-file <task-file> --headed
 ```bash
 npm run agent:codex -- --url "https://example.com" --task "test homepage" --headed
 npm run agent:codex -- --task-file agent/tasks/zoyo-lead-test.json --headed
+npm run agent:state -- --url "https://example.com" --headed
+npm run test:smoke
 npm run typecheck
 ```

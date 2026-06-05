@@ -9,6 +9,7 @@ export interface CliOptions {
   headed: boolean;
   task: QaTask;
   maxSteps: number;
+  stateOnly: boolean;
 }
 
 export function parseCli(argv = process.argv): CliOptions {
@@ -21,7 +22,8 @@ export function parseCli(argv = process.argv): CliOptions {
     .option("--count <count>", "Random lead count", "3")
     .option("--headed", "Run headed browser", false)
     .option("--headless", "Run headless browser", false)
-    .option("--max-steps <count>", "Max Groq tool loop steps", "50");
+    .option("--max-steps <count>", "Max Groq tool loop steps", "50")
+    .option("--state-only", "Open the URL and save latest browser state without a full QA report", false);
 
   program.parse(argv);
   const opts = program.opts();
@@ -42,6 +44,7 @@ export function parseCli(argv = process.argv): CliOptions {
     mode,
     headed,
     task: qaTaskSchema.parse(taskInput),
-    maxSteps: Number(opts.maxSteps || 50)
+    maxSteps: Number(opts.maxSteps || 50),
+    stateOnly: Boolean(opts.stateOnly)
   };
 }

@@ -19,12 +19,16 @@ interface Sheet {
 
 function issueRows(issues: QaIssue[]): Row[] {
   return issues.map((issue) => ({
-    severity: issue.severity,
-    title: conciseText(issue.title),
-    area: issue.area,
-    description: clearText(issue.description),
-    evidence: clearText(issue.evidence || ""),
-    suggestedFix: clearText(issue.suggestedFix || "")
+    Module: issue.area,
+    Issue: conciseText(issue.title),
+    Description: clearText(issue.description),
+    Priority: issue.severity,
+    Status: issue.status || "Open",
+    Steps: clearText(issue.steps || ""),
+    Expected: clearText(issue.expected || ""),
+    Actual: clearText(issue.actual || issue.evidence || ""),
+    Screenshot: issue.screenshot || "",
+    "Developer Note": clearText(issue.developerNote || issue.suggestedFix || "")
   }));
 }
 
@@ -63,6 +67,33 @@ function listRows(values: string[], key: string): Row[] {
   return values.map((value, index) => ({ index: index + 1, [key]: clearText(value) }));
 }
 
+function checklistRows(checklist?: Record<string, string>): Row[] {
+  return Object.entries(checklist || {}).map(([check, status], index) => ({
+    index: index + 1,
+    check,
+    status
+  }));
+}
+
+function browserStateRows(context: RunContext): Row[] {
+  const state = context.browserState;
+  if (!state) return [{ key: "state", value: "No browser state captured." }];
+  return [
+    { key: "url", value: state.url },
+    { key: "title", value: state.title },
+    { key: "savedAt", value: state.savedAt },
+    { key: "screenshotPath", value: state.screenshotPath || "" },
+    { key: "clickableElements", value: state.clickableElements.length },
+    { key: "forms", value: state.forms.length },
+    { key: "tables", value: state.tables.length },
+    { key: "buttons", value: state.buttons.join(" | ") },
+    { key: "inputs", value: state.inputs.join(" | ") },
+    { key: "links", value: state.links.slice(0, 30).join(" | ") },
+    { key: "errors", value: state.errorMessages.join(" | ") },
+    { key: "textSample", value: state.textSample }
+  ];
+}
+
 export function writeExcelReport(context: RunContext, filePath: string): void {
   const sheets: Sheet[] = [
     {
@@ -70,11 +101,20 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
       rows: [{
         websiteUrl: context.task.websiteUrl,
         task: context.task.task,
+        qaProfile: context.task.qaProfile,
         dateTime: context.startedAt,
         mode: context.mode,
         browserMode: context.headed ? "headed" : "headless",
         loginResult: context.loginResult,
         finalStatus: context.finalStatus,
+        totalTests: Object.keys(context.qaChecklist || {}).length,
+        passed: Object.values(context.qaChecklist || {}).filter((status) => status === "Pass").length,
+        failed: Object.values(context.qaChecklist || {}).filter((status) => status === "Fail").length,
+        blocked: [...context.bugs, ...context.uxIssues, ...context.missingValidations].filter((issue) => issue.status === "Blocked").length,
+        criticalBugs: [...context.bugs, ...context.uxIssues, ...context.missingValidations].filter((issue) => issue.severity === "Critical").length,
+        highBugs: [...context.bugs, ...context.uxIssues, ...context.missingValidations].filter((issue) => issue.severity === "High").length,
+        mediumBugs: [...context.bugs, ...context.uxIssues, ...context.missingValidations].filter((issue) => issue.severity === "Medium").length,
+        lowBugs: [...context.bugs, ...context.uxIssues, ...context.missingValidations].filter((issue) => issue.severity === "Low").length,
         bugsFound: context.bugs.length,
         uxIssues: context.uxIssues.length,
         missingValidations: context.missingValidations.length,
@@ -84,14 +124,17 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
         generatedLeads: context.generatedLeads.length
       }]
     },
-    { name: "Steps", rows: listRows(context.stepsPerformed, "step") },
+    { name: "Bugs", rows: issueRows([...context.bugs, ...context.uxIssues, ...context.missingValidations]) },
+    { name: "Test Steps", rows: listRows(context.stepsPerformed, "step") },
     { name: "Issue Matrix", rows: issueMatrixRows(context) },
     { name: "Test Data", rows: leadRows(context.generatedLeads) },
-    { name: "Bugs", rows: issueRows(context.bugs) },
     { name: "UX Issues", rows: issueRows(context.uxIssues) },
     { name: "Missing Validations", rows: issueRows(context.missingValidations) },
     { name: "Console Errors", rows: listRows(context.consoleErrors, "error") },
     { name: "Network Errors", rows: listRows(context.networkErrors, "error") },
+    { name: "Browser State", rows: browserStateRows(context) },
+    { name: "QA Checklist", rows: checklistRows(context.qaChecklist) },
+    { name: "Memory Notes", rows: listRows(context.memoryNotes || [], "note") },
     {
       name: "Screenshots",
       rows: context.screenshots.length

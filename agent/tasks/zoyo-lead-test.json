@@ -1,6 +1,7 @@
 {
   "websiteUrl": "https://zoyo-crm.vercel.app/inbox",
   "task": "Login and test full lead creation flow. Add 8-10 random leads. Report bugs, missing validation, UI issues, and improvement suggestions.",
+  "qaProfile": "full-professional",
   "testDataCount": 10,
   "scope": ["login", "inbox", "lead creation", "lead list", "validation", "navigation"],
   "credentials": {
@@ -9,6 +10,7 @@
   },
   "safety": {
     "allowDelete": false,
+    "allowArchive": false,
     "allowPayment": false,
     "allowRealMessageSend": false,
     "allowBulkUpdate": false,

@@ -14,6 +14,7 @@ export interface AppConfig {
   testEmail?: string;
   testPassword?: string;
   headless: boolean;
+  usePersistentProfile: boolean;
 }
 
 export function loadConfig(): AppConfig {
@@ -23,6 +24,7 @@ export function loadConfig(): AppConfig {
     groqFallbackModel: process.env.GROQ_FALLBACK_MODEL || "openai/gpt-oss-20b",
     testEmail: process.env.TEST_EMAIL,
     testPassword: process.env.TEST_PASSWORD,
-    headless: (process.env.HEADLESS || "true").toLowerCase() !== "false"
+    headless: (process.env.HEADLESS || "true").toLowerCase() !== "false",
+    usePersistentProfile: (process.env.USE_PERSISTENT_PROFILE || "false").toLowerCase() === "true"
   };
 }

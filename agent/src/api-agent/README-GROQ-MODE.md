@@ -1,6 +1,7 @@
 # Groq API Agent Mode
 
 This mode is a standalone CLI agent. Groq acts as the reasoning/tool-calling brain, while Playwright performs browser actions.
+Groq should use the shared tool layer: browser state, indexed clickable elements, selector/text/role clicks, safe fills, screenshots, memory notes, and reports.
 
 Required:
 
@@ -16,6 +17,7 @@ npm run agent:api -- --task-file agent/tasks/zoyo-lead-test.json --max-steps 50 
 ```
 
 If the key is missing, this mode exits with a clear setup error. Codex/no-API mode does not need Groq.
+If the key is missing, the repo still keeps Codex/no-API mode available.
 
 Report rules:
 

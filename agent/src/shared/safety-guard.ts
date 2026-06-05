@@ -2,11 +2,12 @@ import type { SafetyPermissions } from "./types.js";
 
 const destructivePatterns = [
   { key: "allowDelete", pattern: /\b(delete|remove|drop|destroy)\b/i },
+  { key: "allowArchive", pattern: /\b(archive)\b/i },
   { key: "allowPayment", pattern: /\b(pay|payment|charge|checkout|purchase)\b/i },
   { key: "allowRealMessageSend", pattern: /\b(send|sms|whatsapp|email|broadcast)\b/i },
-  { key: "allowBulkUpdate", pattern: /\b(bulk|mass update|import all)\b/i },
-  { key: "allowSettingsChange", pattern: /\b(settings|change password|account setting)\b/i },
-  { key: "allowSensitiveExport", pattern: /\b(export|download customer|dump)\b/i }
+  { key: "allowBulkUpdate", pattern: /\b(bulk|mass update|import all|bulk update)\b/i },
+  { key: "allowSettingsChange", pattern: /\b(settings|change password|account setting|billing|subscription|invite user|invite users)\b/i },
+  { key: "allowSensitiveExport", pattern: /\b(export|download customer|dump|sensitive export)\b/i }
 ] as const;
 
 export function assertSafeAction(label: string, safety: SafetyPermissions): void {
@@ -20,6 +21,7 @@ export function assertSafeAction(label: string, safety: SafetyPermissions): void
 export function defaultSafety(): SafetyPermissions {
   return {
     allowDelete: false,
+    allowArchive: false,
     allowPayment: false,
     allowRealMessageSend: false,
     allowBulkUpdate: false,

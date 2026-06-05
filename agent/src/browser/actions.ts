@@ -9,8 +9,26 @@ export async function runTaskStep(browser: BrowserAgent, step: TaskStep): Promis
     case "click":
       await browser.click(required(step.selector, "selector"));
       return undefined;
+    case "click_by_index":
+      await browser.clickByIndex(requiredNumber(step.index, "index"));
+      return undefined;
+    case "click_by_text":
+      await browser.clickByText(required(step.text || step.value, "text"));
+      return undefined;
+    case "click_by_role":
+      await browser.clickByRole(required(step.role, "role"), step.text || step.value);
+      return undefined;
     case "fill":
       await browser.fill(required(step.selector, "selector"), step.value || "");
+      return undefined;
+    case "fill_by_label":
+      await browser.fillByLabel(required(step.text || step.selector, "label"), step.value || "");
+      return undefined;
+    case "fill_by_placeholder":
+      await browser.fillByPlaceholder(required(step.text || step.selector, "placeholder"), step.value || "");
+      return undefined;
+    case "fill_by_name":
+      await browser.fillByName(required(step.text || step.selector, "name"), step.value || "");
       return undefined;
     case "press":
       await browser.press(required(step.selector, "selector"), step.key || "Enter");
@@ -22,12 +40,17 @@ export async function runTaskStep(browser: BrowserAgent, step: TaskStep): Promis
     case "screenshot":
       return browser.screenshot(step.label || "task");
     case "analyze":
-      await browser.getPageState();
+      await browser.saveBrowserState();
       return undefined;
   }
 }
 
 function required(value: string | undefined, name: string): string {
   if (!value) throw new Error(`Missing ${name} for task step.`);
+  return value;
+}
+
+function requiredNumber(value: number | undefined, name: string): number {
+  if (typeof value !== "number") throw new Error(`Missing ${name} for task step.`);
   return value;
 }

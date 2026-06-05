@@ -55,6 +55,7 @@ export function renderMarkdownReport(context: RunContext): string {
 
 - Website URL: ${context.task.websiteUrl}
 - Task: ${context.task.task}
+- QA profile: ${context.task.qaProfile}
 - Date/time: ${context.startedAt}
 - Mode: ${context.mode}
 - Browser mode: ${context.headed ? "headed" : "headless"}
@@ -72,6 +73,17 @@ ${context.generatedLeads.length ? context.generatedLeads.map((lead) => `- ${lead
 ## Issue Matrix
 
 ${issueMatrix(context)}
+
+## Browser State
+
+- Latest state JSON: agent/artifacts/state/latest-browser-state.json
+- Clickable elements indexed: ${context.browserState?.clickableElements.length ?? 0}
+- Forms detected: ${context.browserState?.forms.length ?? 0}
+- Tables detected: ${context.browserState?.tables.length ?? 0}
+
+## QA Checklist
+
+${Object.keys(context.qaChecklist || {}).length ? Object.entries(context.qaChecklist || {}).map(([check, status]) => `- [${status}] ${check}`).join("\n") : "No checklist generated."}
 
 ${issueList("Bugs Found", context.bugs)}
 

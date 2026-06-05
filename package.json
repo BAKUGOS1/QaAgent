@@ -10,7 +10,9 @@
     "agent:api": "tsx agent/src/index.ts --mode groq",
     "agent:headed": "tsx agent/src/index.ts --headed",
     "agent:task": "tsx agent/src/index.ts --task-file",
+    "agent:state": "tsx agent/src/index.ts --mode codex --state-only",
     "test:agent": "playwright test",
+    "test:smoke": "tsx agent/tests/smoke.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

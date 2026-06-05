@@ -1,7 +1,7 @@
 import type { AppConfig } from "../config.js";
 import { BrowserAgent } from "../browser/browser-agent.js";
 import { createRandomLeads } from "../data/lead-data.js";
-import { detectIssues } from "../qa/issue-detector.js";
+import { runQaEngine } from "../qa/qa-engine.js";
 import type { LeadData, QaTask, RunContext } from "../shared/types.js";
 import { assertSafeAction } from "../shared/safety-guard.js";
 import { sitesMemory } from "../memory/sites-memory.js";
@@ -13,7 +13,6 @@ import { selectGroqModels } from "./model-router.js";
 export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: number, config: AppConfig) {
   const browser = new BrowserAgent(headed);
   const client = new GroqClient(config);
-  client.assertReady();
   const generatedLeads: LeadData[] = createRandomLeads(task.testDataCount);
   const screenshots: string[] = [];
   const startedAt = new Date().toISOString();
@@ -47,6 +46,7 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
   ];
 
   try {
+    client.assertReady();
     await browser.start();
     for (let step = 0; step < maxSteps && !stopRequested; step += 1) {
       const response = await client.chat(messages, [...groqTools], models.main).catch(async (error) => {
@@ -65,8 +65,8 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
       }
     }
 
-    const state = await browser.getPageState();
-    const detected = detectIssues(state, browser.getConsoleErrors(), browser.getNetworkErrors());
+    const state = await browser.saveBrowserState(screenshots.at(-1));
+    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors());
     const context: RunContext = {
       mode: "groq",
       headed,
@@ -80,6 +80,13 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
       consoleErrors: browser.getConsoleErrors(),
       networkErrors: browser.getNetworkErrors(),
       screenshots,
+      browserState: state,
+      qaChecklist: detected.checklist,
+      memoryNotes: [
+        `QA profile: ${task.qaProfile}`,
+        `Clickable elements indexed: ${state.clickableElements.length}`,
+        "Groq should prefer indexed elements and safe selectors from browser state."
+      ],
       loginResult: task.credentials ? "Credentials configured; Groq can use safe task steps/tools without printing secrets." : "No credentials provided.",
       finalStatus: detected.bugs.length ? "Partial Pass" : "Pass"
     };
@@ -104,6 +111,8 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
       consoleErrors: browser.getConsoleErrors(),
       networkErrors: browser.getNetworkErrors(),
       screenshots,
+      qaChecklist: {},
+      memoryNotes: [],
       loginResult: "Not completed.",
       finalStatus: "Fail"
     };
@@ -126,11 +135,33 @@ async function executeToolCall(
   switch (name) {
     case "open_url":
       return { url: await browser.openUrl(String(args.url || task.websiteUrl)) };
+    case "get_browser_state":
+      return browser.saveBrowserState();
+    case "click_by_index":
+      await browser.clickByIndex(Number(args.index));
+      return { ok: true };
+    case "click_by_text":
+      await browser.clickByText(String(args.text || ""));
+      return { ok: true };
+    case "click_by_role":
+      await browser.clickByRole(String(args.role || "button"), args.name ? String(args.name) : undefined);
+      return { ok: true };
+    case "click_selector":
     case "click":
       await browser.click(String(args.selector));
       return { ok: true };
+    case "fill_selector":
     case "fill_input":
       await browser.fill(String(args.selector), String(args.value || ""));
+      return { ok: true };
+    case "fill_by_label":
+      await browser.fillByLabel(String(args.label || ""), String(args.value || ""));
+      return { ok: true };
+    case "fill_by_placeholder":
+      await browser.fillByPlaceholder(String(args.placeholder || ""), String(args.value || ""));
+      return { ok: true };
+    case "fill_by_name":
+      await browser.fillByName(String(args.name || ""), String(args.value || ""));
       return { ok: true };
     case "press_key":
       await browser.press(String(args.selector), String(args.key || "Enter"));
@@ -146,12 +177,13 @@ async function executeToolCall(
     case "get_page_text":
       return { text: await browser.getPageText() };
     case "get_page_state":
-      return browser.getPageState();
+      return browser.saveBrowserState();
     case "get_console_errors":
       return { errors: browser.getConsoleErrors() };
     case "get_network_errors":
       return { errors: browser.getNetworkErrors() };
     case "create_random_lead_data":
+    case "generate_test_data":
       return { leads: generatedLeads.slice(0, Number(args.count || generatedLeads.length)) };
     case "remember_site_note": {
       const memory = sitesMemory.read();

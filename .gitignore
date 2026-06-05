@@ -3,8 +3,11 @@ dist/
 .DS_Store
 .env
 .env.local
+agent/.browser-profile/
 agent/reports/*
 !agent/reports/.gitkeep
+agent/artifacts/state/*
+!agent/artifacts/state/.gitkeep
 agent/artifacts/screenshots/*
 !agent/artifacts/screenshots/.gitkeep
 agent/artifacts/logs/*

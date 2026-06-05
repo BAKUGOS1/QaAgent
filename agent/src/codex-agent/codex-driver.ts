@@ -1,7 +1,7 @@
 import type { QaTask, RunContext } from "../shared/types.js";
 import { BrowserAgent } from "../browser/browser-agent.js";
 import { createRandomLeads } from "../data/lead-data.js";
-import { detectIssues } from "../qa/issue-detector.js";
+import { runQaEngine } from "../qa/qa-engine.js";
 import type { WrittenReports } from "../reports/report-writer.js";
 import { runExplicitTaskSteps } from "./codex-task-runner.js";
 import { finalizeCodexReport } from "./codex-report-helper.js";
@@ -18,8 +18,8 @@ export async function runCodexDriver(task: QaTask, headed: boolean): Promise<{ c
     await browser.waitForLoad();
     screenshots.push(await browser.screenshot("initial"));
     screenshots.push(...await runExplicitTaskSteps(browser, task));
-    const state = await browser.getPageState();
-    const detected = detectIssues(state, browser.getConsoleErrors(), browser.getNetworkErrors());
+    const state = await browser.saveBrowserState(screenshots.at(-1));
+    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors());
     const context: RunContext = {
       mode: "codex",
       headed,
@@ -39,6 +39,13 @@ export async function runCodexDriver(task: QaTask, headed: boolean): Promise<{ c
       consoleErrors: browser.getConsoleErrors(),
       networkErrors: browser.getNetworkErrors(),
       screenshots,
+      browserState: state,
+      qaChecklist: detected.checklist,
+      memoryNotes: [
+        `QA profile: ${task.qaProfile}`,
+        `Clickable elements indexed: ${state.clickableElements.length}`,
+        "Use agent/artifacts/state/latest-browser-state.json for selector planning."
+      ],
       loginResult: task.credentials ? "Credentials configured; explicit login steps required in task file or Codex interaction." : "No credentials provided.",
       finalStatus: detected.bugs.length ? "Partial Pass" : "Pass"
     };
@@ -63,6 +70,8 @@ export async function runCodexDriver(task: QaTask, headed: boolean): Promise<{ c
       consoleErrors: browser.getConsoleErrors(),
       networkErrors: browser.getNetworkErrors(),
       screenshots,
+      qaChecklist: {},
+      memoryNotes: [],
       loginResult: "Not completed.",
       finalStatus: "Fail"
     };

@@ -1,10 +1,12 @@
 {
   "websiteUrl": "https://example.com",
   "task": "Open the website, capture a screenshot, inspect visible text, console errors, network errors, and generate a QA report.",
+  "qaProfile": "smoke",
   "testDataCount": 3,
   "scope": ["smoke", "navigation", "console", "network", "screenshot"],
   "safety": {
     "allowDelete": false,
+    "allowArchive": false,
     "allowPayment": false,
     "allowRealMessageSend": false,
     "allowBulkUpdate": false,
