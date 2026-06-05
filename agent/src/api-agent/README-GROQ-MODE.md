@@ -16,3 +16,11 @@ npm run agent:api -- --task-file agent/tasks/zoyo-lead-test.json --max-steps 50 
 ```
 
 If the key is missing, this mode exits with a clear setup error. Codex/no-API mode does not need Groq.
+
+Report rules:
+
+- Keep bug/error text short and direct.
+- Say what error happened and what is broken.
+- Do not generate CSV.
+- Do not push reports, screenshots, logs, or local artifacts to GitHub.
+- Excel reports embed screenshots when available.

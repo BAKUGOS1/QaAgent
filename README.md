@@ -86,6 +86,14 @@ agent/reports/YYYY-MM-DD-HH-mm-agent-report.xlsx
 
 The Excel report includes separate sheets for summary, steps, generated lead data, bugs, UX issues, missing validations, console errors, network errors, and screenshots.
 
+Report rules:
+
+- Bug text is direct and short: what error happened, what is broken, priority, status.
+- User-facing issue tables use `Module`, `Issue`, `Description`, `Priority`, and `Status`.
+- Excel embeds screenshots/images inside the workbook when screenshots exist.
+- CSV reports are not generated.
+- Reports, screenshots, logs, traces, and `.env` files stay local and are ignored by Git.
+
 ## 10. Screenshots And Logs
 
 Screenshots:

@@ -18,6 +18,15 @@ npm run agent:codex -- --task-file <task-file> --headed
 7. Re-run failed flows.
 8. Produce a final developer-ready bug report.
 
+## Report Style
+
+- Write bugs directly: what error happened, what is broken, where it happened.
+- Keep `Issue` and `Description` short. Avoid long sentences.
+- Use this table shape for user-facing reports: `Module`, `Issue`, `Description`, `Priority`, `Status`.
+- Generate Markdown, JSON, and Excel only. Do not generate CSV.
+- Excel reports must embed screenshots/images in the workbook when screenshots exist.
+- Do not push reports, screenshots, logs, traces, or `.env` files to GitHub.
+
 ## Rules
 
 - Never expose secrets.

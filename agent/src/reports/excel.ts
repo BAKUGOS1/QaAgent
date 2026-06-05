@@ -1,30 +1,38 @@
 import fs from "node:fs";
+import path from "node:path";
 import type { LeadData, QaIssue, RunContext } from "../shared/types.js";
 
 type CellValue = string | number | boolean;
 type Row = Record<string, CellValue>;
 
+interface SheetImage {
+  path: string;
+  rowIndex: number;
+  columnIndex: number;
+}
+
 interface Sheet {
   name: string;
   rows: Row[];
+  images?: SheetImage[];
 }
 
 function issueRows(issues: QaIssue[]): Row[] {
   return issues.map((issue) => ({
     severity: issue.severity,
-    title: issue.title,
+    title: directText(issue.title, 80),
     area: issue.area,
-    description: issue.description,
-    evidence: issue.evidence || "",
-    suggestedFix: issue.suggestedFix || ""
+    description: directText(issue.description, 120),
+    evidence: directText(issue.evidence || "", 120),
+    suggestedFix: directText(issue.suggestedFix || "", 120)
   }));
 }
 
 function issueMatrixRows(context: RunContext): Row[] {
   const rows = [...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => ({
     Module: issue.area,
-    Issue: issue.title,
-    Description: issue.description,
+    Issue: directText(issue.title, 80),
+    Description: directText(issue.description, 120),
     Priority: issue.severity,
     Status: context.finalStatus === "Fail" ? "Blocked" : "Open"
   }));
@@ -52,7 +60,7 @@ function leadRows(leads: LeadData[]): Row[] {
 }
 
 function listRows(values: string[], key: string): Row[] {
-  return values.map((value, index) => ({ index: index + 1, [key]: value }));
+  return values.map((value, index) => ({ index: index + 1, [key]: directText(value, 160) }));
 }
 
 export function writeExcelReport(context: RunContext, filePath: string): void {
@@ -84,14 +92,37 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
     { name: "Missing Validations", rows: issueRows(context.missingValidations) },
     { name: "Console Errors", rows: listRows(context.consoleErrors, "error") },
     { name: "Network Errors", rows: listRows(context.networkErrors, "error") },
-    { name: "Screenshots", rows: listRows(context.screenshots, "path") }
+    {
+      name: "Screenshots",
+      rows: context.screenshots.length
+        ? context.screenshots.map((screenshotPath, index) => ({
+          index: index + 1,
+          path: screenshotPath,
+          image: "embedded"
+        }))
+        : [{ index: 1, path: "No screenshots captured.", image: "" }],
+      images: context.screenshots.map((screenshotPath, index) => ({
+        path: screenshotPath,
+        rowIndex: index + 1,
+        columnIndex: 2
+      }))
+    }
   ];
 
   const files = buildXlsxFiles(sheets);
   fs.writeFileSync(filePath, zipStore(files));
 }
 
+function directText(value: string, maxLength: number): string {
+  const oneLine = value.replace(/\s+/g, " ").trim();
+  if (oneLine.length <= maxLength) return oneLine;
+  const sentenceEnd = oneLine.search(/[.!?]\s/);
+  const cutAt = sentenceEnd > 20 && sentenceEnd < maxLength ? sentenceEnd + 1 : maxLength - 1;
+  return `${oneLine.slice(0, cutAt).trim()}…`;
+}
+
 function buildXlsxFiles(sheets: Sheet[]): Record<string, Buffer> {
+  const imageParts = collectImages(sheets);
   const workbookSheets = sheets.map((sheet, index) =>
     `<sheet name="${escapeXml(sheet.name.slice(0, 31))}" sheetId="${index + 1}" r:id="rId${index + 1}"/>`
   ).join("");
@@ -101,14 +132,20 @@ function buildXlsxFiles(sheets: Sheet[]): Record<string, Buffer> {
   const overrides = sheets.map((_, index) =>
     `<Override PartName="/xl/worksheets/sheet${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`
   ).join("");
+  const drawingOverrides = imageParts.drawings.map((_, index) =>
+    `<Override PartName="/xl/drawings/drawing${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>`
+  ).join("");
 
   const files: Record<string, Buffer> = {
     "[Content_Types].xml": xmlBuffer(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
 <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
 <Default Extension="xml" ContentType="application/xml"/>
+${imageParts.hasPng ? '<Default Extension="png" ContentType="image/png"/>' : ""}
+${imageParts.hasJpg ? '<Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="jpeg" ContentType="image/jpeg"/>' : ""}
 <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
 ${overrides}
+${drawingOverrides}
 </Types>`),
     "_rels/.rels": xmlBuffer(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -125,23 +162,165 @@ ${workbookRels}
   };
 
   sheets.forEach((sheet, index) => {
-    files[`xl/worksheets/sheet${index + 1}.xml`] = xmlBuffer(sheetXml(sheet.rows));
+    const drawing = imageParts.drawings.find((item) => item.sheetIndex === index);
+    files[`xl/worksheets/sheet${index + 1}.xml`] = xmlBuffer(sheetXml(sheet.rows, Boolean(drawing), sheet.images?.length ? 130 : undefined));
+    if (drawing) {
+      files[`xl/worksheets/_rels/sheet${index + 1}.xml.rels`] = xmlBuffer(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing${drawing.drawingIndex}.xml"/>
+</Relationships>`);
+      files[`xl/drawings/drawing${drawing.drawingIndex}.xml`] = xmlBuffer(drawingXml(drawing.images));
+      files[`xl/drawings/_rels/drawing${drawing.drawingIndex}.xml.rels`] = xmlBuffer(drawingRelsXml(drawing.images));
+    }
+  });
+  imageParts.media.forEach((image) => {
+    files[`xl/media/image${image.mediaIndex}.${image.extension}`] = image.data;
   });
   return files;
 }
 
-function sheetXml(rows: Row[]): string {
+function sheetXml(rows: Row[], hasDrawing: boolean, bodyRowHeight?: number): string {
   const actualRows = rows.length ? rows : [{ note: "None" }];
   const headers = Array.from(new Set(actualRows.flatMap((row) => Object.keys(row))));
   const xmlRows = [headers, ...actualRows.map((row) => headers.map((header) => row[header] ?? ""))]
     .map((values, rowIndex) => {
       const cells = values.map((value, columnIndex) => cellXml(value, columnIndex, rowIndex)).join("");
-      return `<row r="${rowIndex + 1}">${cells}</row>`;
+      const height = bodyRowHeight && rowIndex > 0 ? ` ht="${bodyRowHeight}" customHeight="1"` : "";
+      return `<row r="${rowIndex + 1}"${height}>${cells}</row>`;
     }).join("");
+  const cols = hasDrawing ? `<cols><col min="1" max="1" width="10" customWidth="1"/><col min="2" max="2" width="70" customWidth="1"/><col min="3" max="3" width="36" customWidth="1"/></cols>` : "";
+  const drawing = hasDrawing ? '<drawing r:id="rId1"/>' : "";
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+${cols}
 <sheetData>${xmlRows}</sheetData>
+${drawing}
 </worksheet>`;
+}
+
+interface CollectedImage {
+  drawingRid: number;
+  mediaIndex: number;
+  extension: "png" | "jpg" | "jpeg";
+  data: Buffer;
+  rowIndex: number;
+  columnIndex: number;
+  widthPx: number;
+  heightPx: number;
+}
+
+interface DrawingPart {
+  sheetIndex: number;
+  drawingIndex: number;
+  images: CollectedImage[];
+}
+
+function collectImages(sheets: Sheet[]): {
+  drawings: DrawingPart[];
+  media: CollectedImage[];
+  hasPng: boolean;
+  hasJpg: boolean;
+} {
+  const drawings: DrawingPart[] = [];
+  const media: CollectedImage[] = [];
+  let mediaIndex = 1;
+  let drawingIndex = 1;
+  sheets.forEach((sheet, sheetIndex) => {
+    const images: CollectedImage[] = [];
+    (sheet.images || []).forEach((image, imageIndex) => {
+      const resolvedPath = path.isAbsolute(image.path) ? image.path : path.join(process.cwd(), image.path);
+      if (!fs.existsSync(resolvedPath)) return;
+      const extension = imageExtension(resolvedPath);
+      if (!extension) return;
+      const data = fs.readFileSync(resolvedPath);
+      const size = imageSize(data, extension);
+      if (!size) return;
+      const fitted = fitSize(size.width, size.height, 260, 145);
+      const collected: CollectedImage = {
+        drawingRid: imageIndex + 1,
+        mediaIndex,
+        extension,
+        data,
+        rowIndex: image.rowIndex,
+        columnIndex: image.columnIndex,
+        widthPx: fitted.width,
+        heightPx: fitted.height
+      };
+      images.push(collected);
+      media.push(collected);
+      mediaIndex += 1;
+    });
+    if (images.length) {
+      drawings.push({ sheetIndex, drawingIndex, images });
+      drawingIndex += 1;
+    }
+  });
+  return {
+    drawings,
+    media,
+    hasPng: media.some((image) => image.extension === "png"),
+    hasJpg: media.some((image) => image.extension === "jpg" || image.extension === "jpeg")
+  };
+}
+
+function imageExtension(filePath: string): "png" | "jpg" | "jpeg" | undefined {
+  const extension = path.extname(filePath).toLowerCase().replace(".", "");
+  if (extension === "png" || extension === "jpg" || extension === "jpeg") return extension;
+  return undefined;
+}
+
+function imageSize(data: Buffer, extension: "png" | "jpg" | "jpeg"): { width: number; height: number } | undefined {
+  if (extension === "png" && data.length > 24) {
+    return { width: data.readUInt32BE(16), height: data.readUInt32BE(20) };
+  }
+  if ((extension === "jpg" || extension === "jpeg") && data.length > 4) {
+    let offset = 2;
+    while (offset < data.length) {
+      if (data[offset] !== 0xff) return undefined;
+      const marker = data[offset + 1];
+      const length = data.readUInt16BE(offset + 2);
+      if (marker >= 0xc0 && marker <= 0xc3) {
+        return { height: data.readUInt16BE(offset + 5), width: data.readUInt16BE(offset + 7) };
+      }
+      offset += 2 + length;
+    }
+  }
+  return undefined;
+}
+
+function fitSize(width: number, height: number, maxWidth: number, maxHeight: number): { width: number; height: number } {
+  const scale = Math.min(maxWidth / width, maxHeight / height, 1);
+  return { width: Math.round(width * scale), height: Math.round(height * scale) };
+}
+
+function drawingXml(images: CollectedImage[]): string {
+  const anchors = images.map((image, index) => {
+    const id = index + 1;
+    return `<xdr:oneCellAnchor>
+<xdr:from><xdr:col>${image.columnIndex}</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${image.rowIndex}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from>
+<xdr:ext cx="${image.widthPx * 9525}" cy="${image.heightPx * 9525}"/>
+<xdr:pic>
+<xdr:nvPicPr><xdr:cNvPr id="${id}" name="Screenshot ${id}"/><xdr:cNvPicPr/></xdr:nvPicPr>
+<xdr:blipFill><a:blip r:embed="rId${image.drawingRid}"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill>
+<xdr:spPr><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr>
+</xdr:pic>
+<xdr:clientData/>
+</xdr:oneCellAnchor>`;
+  }).join("");
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+${anchors}
+</xdr:wsDr>`;
+}
+
+function drawingRelsXml(images: CollectedImage[]): string {
+  const rels = images.map((image) =>
+    `<Relationship Id="rId${image.drawingRid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${image.mediaIndex}.${image.extension}"/>`
+  ).join("");
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+${rels}
+</Relationships>`;
 }
 
 function cellXml(value: CellValue, columnIndex: number, rowIndex: number): string {

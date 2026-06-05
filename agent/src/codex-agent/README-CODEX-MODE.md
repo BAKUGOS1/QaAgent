@@ -10,3 +10,11 @@ npm run agent:codex -- --task-file agent/tasks/zoyo-lead-test.json --headed
 ```
 
 Codex should inspect the generated markdown/JSON report, screenshots, and logs, then continue with more precise task steps or selector fixes when needed.
+
+Report rules:
+
+- Keep bug/error text short and direct.
+- Say what error happened and what is broken.
+- Do not generate CSV.
+- Do not push reports, screenshots, logs, or local artifacts to GitHub.
+- Excel reports embed screenshots when available.
