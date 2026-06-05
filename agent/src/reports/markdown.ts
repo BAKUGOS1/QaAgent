@@ -44,10 +44,7 @@ function conciseText(value: string): string {
 }
 
 function clearText(value: string): string {
-  return value
-    .replace(/\s+/g, " ")
-    .replace(/\s*([.!?])\s*/g, "$1 ")
-    .trim();
+  return value.replace(/\s+/g, " ").trim();
 }
 
 export function renderMarkdownReport(context: RunContext): string {

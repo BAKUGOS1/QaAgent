@@ -1,1 +1,35 @@
-{}
+{
+  "https://example.com": {
+    "firstClickable": "a[role=\"link\"]:has-text(\"Learn more\")"
+  },
+  "https://www.wikipedia.org/": {
+    "firstClickable": "#js-link-box-en"
+  },
+  "https://www.python.org/": {
+    "firstClickable": "a[role=\"link\"]:has-text(\"Skip to content\")"
+  },
+  "https://nodejs.org/en": {
+    "firstClickable": "a[role=\"link\"]:has-text(\"Skip to content\")"
+  },
+  "https://playwright.dev/": {
+    "firstClickable": "a[role=\"link\"]:has-text(\"Skip to main content\")"
+  },
+  "https://developer.mozilla.org/en-US/": {
+    "firstClickable": "a[role=\"link\"]:has-text(\"Skip to main content\")"
+  },
+  "https://www.npmjs.com/": {
+    "firstClickable": "a[role=\"link\"]:has-text(\"Cloudflare\")"
+  },
+  "https://vercel.com/": {
+    "firstClickable": "[data-testid=\"geistcn/skip-nav-link\"]"
+  },
+  "https://github.com/": {
+    "firstClickable": "a[role=\"link\"]:has-text(\"Skip to content\")"
+  },
+  "https://app.zybra.in/": {
+    "firstClickable": "button[role=\"button\"]:has-text(\"button\")",
+    "loginEmail": "input[name='email']",
+    "loginPassword": "input[name='password']",
+    "loginSubmit": "button:has-text('Login')"
+  }
+}

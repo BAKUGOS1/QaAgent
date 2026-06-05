@@ -1,1 +1,10 @@
-{}
+{
+  "multi-site-professional-audit": [
+    "smoke",
+    "browser-state",
+    "console-network",
+    "accessibility-basic",
+    "responsive-basic",
+    "safe-authenticated-navigation"
+  ]
+}

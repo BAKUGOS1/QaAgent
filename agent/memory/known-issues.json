@@ -1,1 +1,86 @@
-{}
+{
+  "https://example.com": [],
+  "https://www.wikipedia.org/": [],
+  "https://www.python.org/": [
+    {
+      "title": "Slow initial load",
+      "module": "Python / Performance",
+      "priority": "Medium",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    },
+    {
+      "title": "Console errors detected",
+      "module": "Python / Console",
+      "priority": "Medium",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    }
+  ],
+  "https://nodejs.org/en": [],
+  "https://playwright.dev/": [],
+  "https://developer.mozilla.org/en-US/": [],
+  "https://www.npmjs.com/": [
+    {
+      "title": "Slow initial load",
+      "module": "NPM / Performance",
+      "priority": "Medium",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    },
+    {
+      "title": "Console errors detected",
+      "module": "NPM / Console",
+      "priority": "High",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    },
+    {
+      "title": "Failed network requests detected",
+      "module": "NPM / Network",
+      "priority": "High",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    }
+  ],
+  "https://vercel.com/": [
+    {
+      "title": "Console errors detected",
+      "module": "Vercel / Console",
+      "priority": "High",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    },
+    {
+      "title": "Failed network requests detected",
+      "module": "Vercel / Network",
+      "priority": "High",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    }
+  ],
+  "https://github.com/": [],
+  "https://app.zybra.in/": [
+    {
+      "title": "Console errors detected after login",
+      "module": "Zybra / Console",
+      "priority": "Medium",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    },
+    {
+      "title": "Failed API/assets after login",
+      "module": "Zybra / Network",
+      "priority": "Medium",
+      "status": "Open",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    },
+    {
+      "title": "Payment/delete/export actions skipped",
+      "module": "Zybra / Safety Guard",
+      "priority": "High",
+      "status": "Blocked",
+      "lastSeenAt": "2026-06-05T15:39:58.167Z"
+    }
+  ]
+}

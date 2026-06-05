@@ -1,1 +1,113 @@
-{}
+{
+  "https://example.com": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Example Domain",
+    "lastFinalUrl": "https://example.com/",
+    "usefulNotes": [
+      "Last audit: Example",
+      "Clickable elements indexed: 1",
+      "Console errors: 0",
+      "Network errors: 0"
+    ]
+  },
+  "https://www.wikipedia.org/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Wikipedia",
+    "lastFinalUrl": "https://www.wikipedia.org/",
+    "usefulNotes": [
+      "Last audit: Wikipedia",
+      "Clickable elements indexed: 33",
+      "Console errors: 0",
+      "Network errors: 0"
+    ]
+  },
+  "https://www.python.org/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Welcome to Python.org",
+    "lastFinalUrl": "https://www.python.org/",
+    "usefulNotes": [
+      "Last audit: Python",
+      "Clickable elements indexed: 100",
+      "Console errors: 1",
+      "Network errors: 0"
+    ]
+  },
+  "https://nodejs.org/en": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Node.js — Run JavaScript Everywhere",
+    "lastFinalUrl": "https://nodejs.org/en",
+    "usefulNotes": [
+      "Last audit: Node.js",
+      "Clickable elements indexed: 71",
+      "Console errors: 0",
+      "Network errors: 0"
+    ]
+  },
+  "https://playwright.dev/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Fast and reliable end-to-end testing for modern web apps | Playwright",
+    "lastFinalUrl": "https://playwright.dev/",
+    "usefulNotes": [
+      "Last audit: Playwright",
+      "Clickable elements indexed: 50",
+      "Console errors: 0",
+      "Network errors: 0"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "MDN Web Docs",
+    "lastFinalUrl": "https://developer.mozilla.org/en-US/",
+    "usefulNotes": [
+      "Last audit: MDN Web Docs",
+      "Clickable elements indexed: 93",
+      "Console errors: 0",
+      "Network errors: 0"
+    ]
+  },
+  "https://www.npmjs.com/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Just a moment...",
+    "lastFinalUrl": "chrome-error://chromewebdata/",
+    "usefulNotes": [
+      "Last audit: NPM",
+      "Clickable elements indexed: 2",
+      "Console errors: 15",
+      "Network errors: 6"
+    ]
+  },
+  "https://vercel.com/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Vercel: Build and deploy the best web experiences with the AI Cloud",
+    "lastFinalUrl": "https://vercel.com/",
+    "usefulNotes": [
+      "Last audit: Vercel",
+      "Clickable elements indexed: 100",
+      "Console errors: 8",
+      "Network errors: 8"
+    ]
+  },
+  "https://github.com/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "GitHub · Change is constant. GitHub keeps you ahead. · GitHub",
+    "lastFinalUrl": "https://github.com/",
+    "usefulNotes": [
+      "Last audit: GitHub",
+      "Clickable elements indexed: 100",
+      "Console errors: 0",
+      "Network errors: 0"
+    ]
+  },
+  "https://app.zybra.in/": {
+    "lastAuditedAt": "2026-06-05T15:39:58.167Z",
+    "lastTitle": "Dashboard | Zybra",
+    "lastFinalUrl": "https://app.zybra.in/dashboard",
+    "usefulNotes": [
+      "Last audit: Zybra",
+      "Clickable elements indexed: 33",
+      "Console errors: 5",
+      "Network errors: 2",
+      "Zybra modules checked: Dashboard, Contact, Inventory, Manufacturing, Banking, Sales, Purchase, Payroll, Accountant, GST, Documents, Reports, Settings"
+    ]
+  }
+}
