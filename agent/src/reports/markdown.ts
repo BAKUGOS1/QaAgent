@@ -11,6 +11,34 @@ function issueList(title: string, issues: QaIssue[]): string {
   ].filter(Boolean).join("\n")).join("\n\n")}\n`;
 }
 
+function issueMatrix(context: RunContext): string {
+  const rows = [...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => ({
+    module: issue.area,
+    issue: issue.title,
+    description: issue.description,
+    priority: issue.severity,
+    status: context.finalStatus === "Fail" ? "Blocked" : "Open"
+  }));
+  if (rows.length === 0) {
+    rows.push({
+      module: "Lead Module",
+      issue: "No issue found",
+      description: "No bugs were detected during this run.",
+      priority: "Low",
+      status: "Pass"
+    });
+  }
+  return [
+    "| Module | Issue | Description | Priority | Status |",
+    "|---|---|---|---|---|",
+    ...rows.map((row) => `| ${escapeTable(row.module)} | ${escapeTable(row.issue)} | ${escapeTable(row.description)} | ${escapeTable(row.priority)} | ${escapeTable(row.status)} |`)
+  ].join("\n");
+}
+
+function escapeTable(value: string): string {
+  return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
+}
+
 export function renderMarkdownReport(context: RunContext): string {
   return `# QA Agent Report
 
@@ -29,6 +57,10 @@ ${context.stepsPerformed.length ? context.stepsPerformed.map((step) => `- ${step
 ## Test Data Created
 
 ${context.generatedLeads.length ? context.generatedLeads.map((lead) => `- ${lead.name}, ${lead.company}, ${lead.city}, ${lead.source}, ${lead.status}`).join("\n") : "No lead data generated."}
+
+## Issue Matrix
+
+${issueMatrix(context)}
 
 ${issueList("Bugs Found", context.bugs)}
 

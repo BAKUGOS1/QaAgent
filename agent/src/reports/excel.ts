@@ -20,6 +20,23 @@ function issueRows(issues: QaIssue[]): Row[] {
   }));
 }
 
+function issueMatrixRows(context: RunContext): Row[] {
+  const rows = [...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => ({
+    Module: issue.area,
+    Issue: issue.title,
+    Description: issue.description,
+    Priority: issue.severity,
+    Status: context.finalStatus === "Fail" ? "Blocked" : "Open"
+  }));
+  return rows.length ? rows : [{
+    Module: "Lead Module",
+    Issue: "No issue found",
+    Description: "No bugs were detected during this run.",
+    Priority: "Low",
+    Status: "Pass"
+  }];
+}
+
 function leadRows(leads: LeadData[]): Row[] {
   return leads.map((lead) => ({
     name: lead.name,
@@ -60,6 +77,7 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
       }]
     },
     { name: "Steps", rows: listRows(context.stepsPerformed, "step") },
+    { name: "Issue Matrix", rows: issueMatrixRows(context) },
     { name: "Test Data", rows: leadRows(context.generatedLeads) },
     { name: "Bugs", rows: issueRows(context.bugs) },
     { name: "UX Issues", rows: issueRows(context.uxIssues) },
