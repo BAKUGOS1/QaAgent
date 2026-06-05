@@ -20,7 +20,8 @@ export function finalizeCodexReport(context: RunContext) {
     date: context.startedAt,
     status: context.finalStatus,
     reportMarkdown: reports.markdownPath,
-    reportJson: reports.jsonPath
+    reportJson: reports.jsonPath,
+    reportExcel: reports.excelPath
   });
   testHistory.write(history);
   return reports;

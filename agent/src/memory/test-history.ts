@@ -7,6 +7,7 @@ export interface TestHistoryEntry {
   status: string;
   reportMarkdown: string;
   reportJson: string;
+  reportExcel?: string;
 }
 
 export const testHistory = new MemoryManager<TestHistoryEntry[]>("test-history.json", []);

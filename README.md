@@ -4,7 +4,7 @@ QA Agent is a lightweight TypeScript website QA/testing project with two modes s
 
 ## 1. What This Project Is
 
-This repo helps test websites and CRM-style flows. It opens pages, captures screenshots, records console/network errors, generates realistic Indian-style CRM lead data, writes local memory, and creates Markdown plus JSON reports.
+This repo helps test websites and CRM-style flows. It opens pages, captures screenshots, records console/network errors, generates realistic Indian-style CRM lead data, writes local memory, and creates Markdown, JSON, plus Excel reports.
 
 ## 2. Two Modes Explained
 
@@ -81,7 +81,10 @@ Reports are saved to:
 ```text
 agent/reports/YYYY-MM-DD-HH-mm-agent-report.md
 agent/reports/YYYY-MM-DD-HH-mm-agent-report.json
+agent/reports/YYYY-MM-DD-HH-mm-agent-report.xlsx
 ```
+
+The Excel report includes separate sheets for summary, steps, generated lead data, bugs, UX issues, missing validations, console errors, network errors, and screenshots.
 
 ## 10. Screenshots And Logs
 

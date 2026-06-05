@@ -2,10 +2,11 @@ import type { QaTask, RunContext } from "../shared/types.js";
 import { BrowserAgent } from "../browser/browser-agent.js";
 import { createRandomLeads } from "../data/lead-data.js";
 import { detectIssues } from "../qa/issue-detector.js";
+import type { WrittenReports } from "../reports/report-writer.js";
 import { runExplicitTaskSteps } from "./codex-task-runner.js";
 import { finalizeCodexReport } from "./codex-report-helper.js";
 
-export async function runCodexDriver(task: QaTask, headed: boolean): Promise<{ context: RunContext; reports: { markdownPath: string; jsonPath: string } }> {
+export async function runCodexDriver(task: QaTask, headed: boolean): Promise<{ context: RunContext; reports: WrittenReports }> {
   const browser = new BrowserAgent(headed);
   const generatedLeads = createRandomLeads(task.testDataCount);
   const startedAt = new Date().toISOString();

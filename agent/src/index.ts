@@ -13,6 +13,7 @@ async function main(): Promise<void> {
   console.log("\nQA run complete.");
   console.log(`Markdown report: ${result.reports.markdownPath}`);
   console.log(`JSON report: ${result.reports.jsonPath}`);
+  console.log(`Excel report: ${result.reports.excelPath}`);
   console.log(`Final status: ${result.context.finalStatus}`);
 }
 
