@@ -21,7 +21,9 @@ npm run agent:codex -- --task-file <task-file> --headed
 ## Report Style
 
 - Write bugs directly: what error happened, what is broken, where it happened.
-- Keep `Issue` and `Description` short. Avoid long sentences.
+- Keep `Issue` concise.
+- Keep `Description` clear and complete. Do not cut important details.
+- Avoid unnecessary long sentences.
 - Use this table shape for user-facing reports: `Module`, `Issue`, `Description`, `Priority`, `Status`.
 - Generate Markdown, JSON, and Excel only. Do not generate CSV.
 - Excel reports must embed screenshots/images in the workbook when screenshots exist.

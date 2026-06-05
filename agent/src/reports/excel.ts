@@ -20,19 +20,19 @@ interface Sheet {
 function issueRows(issues: QaIssue[]): Row[] {
   return issues.map((issue) => ({
     severity: issue.severity,
-    title: directText(issue.title, 80),
+    title: conciseText(issue.title),
     area: issue.area,
-    description: directText(issue.description, 120),
-    evidence: directText(issue.evidence || "", 120),
-    suggestedFix: directText(issue.suggestedFix || "", 120)
+    description: clearText(issue.description),
+    evidence: clearText(issue.evidence || ""),
+    suggestedFix: clearText(issue.suggestedFix || "")
   }));
 }
 
 function issueMatrixRows(context: RunContext): Row[] {
   const rows = [...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => ({
     Module: issue.area,
-    Issue: directText(issue.title, 80),
-    Description: directText(issue.description, 120),
+    Issue: conciseText(issue.title),
+    Description: clearText(issue.description),
     Priority: issue.severity,
     Status: context.finalStatus === "Fail" ? "Blocked" : "Open"
   }));
@@ -60,7 +60,7 @@ function leadRows(leads: LeadData[]): Row[] {
 }
 
 function listRows(values: string[], key: string): Row[] {
-  return values.map((value, index) => ({ index: index + 1, [key]: directText(value, 160) }));
+  return values.map((value, index) => ({ index: index + 1, [key]: clearText(value) }));
 }
 
 export function writeExcelReport(context: RunContext, filePath: string): void {
@@ -113,12 +113,15 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
   fs.writeFileSync(filePath, zipStore(files));
 }
 
-function directText(value: string, maxLength: number): string {
-  const oneLine = value.replace(/\s+/g, " ").trim();
-  if (oneLine.length <= maxLength) return oneLine;
-  const sentenceEnd = oneLine.search(/[.!?]\s/);
-  const cutAt = sentenceEnd > 20 && sentenceEnd < maxLength ? sentenceEnd + 1 : maxLength - 1;
-  return `${oneLine.slice(0, cutAt).trim()}…`;
+function conciseText(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function clearText(value: string): string {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/\s*([.!?])\s*/g, "$1 ")
+    .trim();
 }
 
 function buildXlsxFiles(sheets: Sheet[]): Record<string, Buffer> {

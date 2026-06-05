@@ -88,7 +88,8 @@ The Excel report includes separate sheets for summary, steps, generated lead dat
 
 Report rules:
 
-- Bug text is direct and short: what error happened, what is broken, priority, status.
+- Bug text is direct and clear: what error happened, what is broken, priority, status.
+- Descriptions must be complete. Do not cut important details.
 - User-facing issue tables use `Module`, `Issue`, `Description`, `Priority`, and `Status`.
 - Excel embeds screenshots/images inside the workbook when screenshots exist.
 - CSV reports are not generated.

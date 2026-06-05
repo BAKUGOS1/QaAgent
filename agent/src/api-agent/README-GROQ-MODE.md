@@ -19,8 +19,9 @@ If the key is missing, this mode exits with a clear setup error. Codex/no-API mo
 
 Report rules:
 
-- Keep bug/error text short and direct.
+- Keep bug/error text direct and clear.
 - Say what error happened and what is broken.
+- Keep descriptions complete. Do not cut important details.
 - Do not generate CSV.
 - Do not push reports, screenshots, logs, or local artifacts to GitHub.
 - Excel reports embed screenshots when available.

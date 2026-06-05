@@ -27,8 +27,8 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
         "You are a safe website QA agent.",
         "Use Playwright tools only. Never request destructive actions unless allowed by safety settings.",
         "Never reveal or store passwords, tokens, cookies, or real customer data.",
-        "Report bugs directly: short title, short error/bug description, clear priority, clear status.",
-        "Avoid long sentences in bug reports.",
+        "Report bugs directly: concise title, complete error/bug description, clear priority, clear status.",
+        "Avoid unnecessary long sentences, but do not cut important details.",
         "Do not generate CSV reports.",
         "Do not push reports, screenshots, logs, or local artifacts to GitHub.",
         "When enough evidence is collected, call generate_report."

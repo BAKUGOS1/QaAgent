@@ -3,19 +3,19 @@ import type { QaIssue, RunContext } from "../shared/types.js";
 function issueList(title: string, issues: QaIssue[]): string {
   if (issues.length === 0) return `## ${title}\n\nNone found.\n`;
   return `## ${title}\n\n${issues.map((issue) => [
-    `### ${issue.severity}: ${directText(issue.title, 80)}`,
+    `### ${issue.severity}: ${conciseText(issue.title)}`,
     `- Area: ${issue.area}`,
-    `- Error/Bug: ${directText(issue.description, 120)}`,
-    issue.evidence ? `- Evidence: ${directText(issue.evidence, 120)}` : undefined,
-    issue.suggestedFix ? `- Fix: ${directText(issue.suggestedFix, 120)}` : undefined
+    `- Error/Bug: ${clearText(issue.description)}`,
+    issue.evidence ? `- Evidence: ${clearText(issue.evidence)}` : undefined,
+    issue.suggestedFix ? `- Fix: ${clearText(issue.suggestedFix)}` : undefined
   ].filter(Boolean).join("\n")).join("\n\n")}\n`;
 }
 
 function issueMatrix(context: RunContext): string {
   const rows = [...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => ({
     module: issue.area,
-    issue: directText(issue.title, 80),
-    description: directText(issue.description, 120),
+    issue: conciseText(issue.title),
+    description: clearText(issue.description),
     priority: issue.severity,
     status: context.finalStatus === "Fail" ? "Blocked" : "Open"
   }));
@@ -39,12 +39,15 @@ function escapeTable(value: string): string {
   return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
 }
 
-function directText(value: string, maxLength: number): string {
-  const oneLine = value.replace(/\s+/g, " ").trim();
-  if (oneLine.length <= maxLength) return oneLine;
-  const sentenceEnd = oneLine.search(/[.!?]\s/);
-  const cutAt = sentenceEnd > 20 && sentenceEnd < maxLength ? sentenceEnd + 1 : maxLength - 1;
-  return `${oneLine.slice(0, cutAt).trim()}…`;
+function conciseText(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function clearText(value: string): string {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/\s*([.!?])\s*/g, "$1 ")
+    .trim();
 }
 
 export function renderMarkdownReport(context: RunContext): string {
@@ -74,11 +77,11 @@ ${issueList("Bugs Found", context.bugs)}
 
 ## Console Errors
 
-${context.consoleErrors.length ? context.consoleErrors.map((error) => `- ${directText(error, 140)}`).join("\n") : "None found."}
+${context.consoleErrors.length ? context.consoleErrors.map((error) => `- ${clearText(error)}`).join("\n") : "None found."}
 
 ## Network Errors
 
-${context.networkErrors.length ? context.networkErrors.map((error) => `- ${directText(error, 140)}`).join("\n") : "None found."}
+${context.networkErrors.length ? context.networkErrors.map((error) => `- ${clearText(error)}`).join("\n") : "None found."}
 
 ${issueList("UI/UX Issues", context.uxIssues)}
 
@@ -90,6 +93,6 @@ ${context.screenshots.length ? context.screenshots.map((shot) => `- ${shot}`).jo
 
 ## Suggested Fixes For Developers
 
-${[...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => `- [${issue.severity}] ${directText(issue.suggestedFix || issue.title, 120)}`).join("\n") || "- No fixes suggested."}
+${[...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => `- [${issue.severity}] ${clearText(issue.suggestedFix || issue.title)}`).join("\n") || "- No fixes suggested."}
 `;
 }
