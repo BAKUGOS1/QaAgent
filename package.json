@@ -1,0 +1,29 @@
+{
+  "name": "qa-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Two-mode website QA agent with a shared Playwright browser engine.",
+  "type": "module",
+  "scripts": {
+    "agent": "tsx agent/src/index.ts",
+    "agent:codex": "tsx agent/src/index.ts --mode codex",
+    "agent:api": "tsx agent/src/index.ts --mode groq",
+    "agent:headed": "tsx agent/src/index.ts --headed",
+    "agent:task": "tsx agent/src/index.ts --task-file",
+    "test:agent": "playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "commander": "^14.0.2",
+    "dotenv": "^17.2.3",
+    "playwright": "^1.57.0",
+    "tsx": "^4.21.0",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
+}
