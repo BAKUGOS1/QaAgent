@@ -2,8 +2,31 @@
   "name": "qa-agent",
   "version": "0.1.0",
   "private": true,
-  "description": "Two-mode website QA agent with a shared Playwright browser engine.",
+  "description": "TypeScript + Playwright QA agent for safe website testing, browser-state capture, and Markdown/JSON/Excel reports.",
   "type": "module",
+  "keywords": [
+    "qa",
+    "qa-agent",
+    "playwright",
+    "typescript",
+    "browser-automation",
+    "web-testing",
+    "test-automation",
+    "codex",
+    "groq",
+    "crm-testing"
+  ],
+  "homepage": "https://github.com/BAKUGOS1/QaAgent#readme",
+  "bugs": {
+    "url": "https://github.com/BAKUGOS1/QaAgent/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BAKUGOS1/QaAgent.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "agent": "tsx agent/src/index.ts",
     "agent:codex": "tsx agent/src/index.ts --mode codex",

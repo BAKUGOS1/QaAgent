@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest a new QA Agent capability.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What QA workflow should this improve?
+      placeholder: Describe the testing gap or repeated manual work.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      placeholder: Describe the behavior, command, report output, or task format you want.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Browser automation
+        - QA playbooks
+        - Reports
+        - Memory
+        - Groq API mode
+        - Codex/no-API mode
+        - Safety guard
+        - Documentation
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      placeholder: Add examples, links, or screenshots that do not expose secrets.
