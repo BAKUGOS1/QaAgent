@@ -1,0 +1,20 @@
+{
+  "name": "qa-agent-marketplace",
+  "interface": {
+    "displayName": "QA Agent Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "qa-agent",
+      "source": {
+        "source": "local",
+        "path": "./plugins/qa-agent"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

@@ -11,16 +11,21 @@ interface GateResult {
 const results: GateResult[] = [];
 
 function run(name: string, command: string, args: string[]): void {
-  const result = spawnSync(command, args, {
-    cwd: process.cwd(),
-    encoding: "utf8",
-    stdio: "pipe",
-    env: { ...process.env, QA_GATE_CHILD: "1" }
-  });
-  const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+  const isWindows = process.platform === "win32";
+  const result = spawnSync(
+    isWindows ? "cmd.exe" : command,
+    isWindows ? ["/d", "/s", "/c", [command, ...args].join(" ")] : args,
+    {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      stdio: "pipe",
+      env: { ...process.env, QA_GATE_CHILD: "1" }
+    }
+  );
+  const output = [result.stdout, result.stderr, result.error?.message].filter(Boolean).join("\n").trim();
   results.push({
     name,
-    status: result.status === 0 ? "PASS" : "FAIL",
+    status: !result.error && result.status === 0 ? "PASS" : "FAIL",
     details: output.split("\n").slice(-12).join("\n")
   });
 }

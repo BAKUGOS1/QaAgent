@@ -16,6 +16,7 @@ QA Agent is built around one shared browser engine and two operating modes:
 - Indian-style CRM test lead generation with `@faker-js/faker`.
 - Excel-first reports, including embedded screenshots. Markdown/JSON are optional debug outputs.
 - Safety guardrails that block destructive actions such as deletes, payments, real message sends, bulk updates, billing changes, sensitive exports, and account setting changes by default.
+- Installable Codex plugin so this repo can expose the QA Agent skill on any machine.
 
 ## Quick Start
 
@@ -28,6 +29,38 @@ npm run quality:gate
 ```
 
 The smoke test verifies Codex/no-API mode, browser state capture, screenshot capture, report writing, Excel media embedding, missing Groq key handling, safety guards, and generated test data.
+
+## Install As A Codex Plugin
+
+This repo includes a local Codex marketplace and plugin:
+
+```text
+.agents/plugins/marketplace.json
+plugins/qa-agent/.codex-plugin/plugin.json
+plugins/qa-agent/skills/qa-agent/SKILL.md
+```
+
+From a fresh clone:
+
+```bash
+git clone https://github.com/BAKUGOS1/QaAgent.git
+cd QaAgent
+npm install
+npx playwright install
+codex plugin marketplace add .
+codex plugin add qa-agent@qa-agent-marketplace
+```
+
+Open a new Codex thread after installing so the `qa-agent` skill is available.
+
+If you are not inside the repo, use the absolute path:
+
+```bash
+codex plugin marketplace add "C:\path\to\QaAgent"
+codex plugin add qa-agent@qa-agent-marketplace
+```
+
+More details: [`docs/PLUGIN_INSTALL.md`](docs/PLUGIN_INSTALL.md)
 
 ## Requirements
 

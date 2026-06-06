@@ -1,0 +1,37 @@
+{
+  "name": "qa-agent",
+  "version": "0.1.0",
+  "description": "Codex plugin for running safe website QA with the QaAgent Playwright framework.",
+  "author": {
+    "name": "BAKUGOS1",
+    "url": "https://github.com/BAKUGOS1"
+  },
+  "homepage": "https://github.com/BAKUGOS1/QaAgent#readme",
+  "repository": "https://github.com/BAKUGOS1/QaAgent",
+  "keywords": [
+    "qa",
+    "playwright",
+    "codex",
+    "browser-testing",
+    "test-automation",
+    "website-qa"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "QA Agent",
+    "shortDescription": "Run safe website QA from Codex.",
+    "longDescription": "QA Agent helps Codex run authenticated website checks with Playwright, capture screenshots, inspect modules, watch console/network health, and generate local QA reports without committing artifacts or secrets.",
+    "developerName": "BAKUGOS1",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Browser Testing",
+      "QA Reports",
+      "Safe Automation"
+    ],
+    "defaultPrompt": [
+      "Run full QA on this website",
+      "Check login and all modules safely",
+      "Generate a QA report with screenshots"
+    ]
+  }
+}
