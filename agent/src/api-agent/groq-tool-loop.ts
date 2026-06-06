@@ -1,6 +1,8 @@
 import type { AppConfig } from "../config.js";
 import { BrowserAgent } from "../browser/browser-agent.js";
+import { runConfiguredLogin } from "../browser/login-runner.js";
 import { createRandomLeads } from "../data/lead-data.js";
+import { buildCoverageSummary, statusWithCoverage } from "../qa/coverage.js";
 import { runQaEngine } from "../qa/qa-engine.js";
 import type { LeadData, QaTask, RunContext } from "../shared/types.js";
 import { assertSafeAction } from "../shared/safety-guard.js";
@@ -18,6 +20,7 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
   const startedAt = new Date().toISOString();
   const models = selectGroqModels(config);
   let stopRequested = false;
+  let loginResult = task.credentials ? "Credentials configured but login is not enabled." : "No credentials provided.";
 
   const messages: GroqMessage[] = [
     {
@@ -56,6 +59,7 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
         task: task.task,
         scope: task.scope,
         safety: task.safety,
+        loginConfigured: Boolean(task.login?.enabled),
         generatedLeadCount: generatedLeads.length
       })
     }
@@ -64,6 +68,19 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
   try {
     client.assertReady();
     await browser.start();
+    await browser.openUrl(task.websiteUrl);
+    await browser.waitForLoad();
+    screenshots.push(await browser.screenshot("initial"));
+    const configuredLogin = await runConfiguredLogin(browser, task, screenshots);
+    loginResult = configuredLogin.resultText;
+    messages.push({
+      role: "user",
+      content: JSON.stringify({
+        initialBrowserUrl: browser.getUrl(),
+        loginResult,
+        instruction: "Continue safe QA from the current browser state. Do not print or store credentials."
+      })
+    });
     for (let step = 0; step < maxSteps && !stopRequested; step += 1) {
       const response = await client.chat(messages, [...groqTools], models.main).catch(async (error) => {
         messages.push({ role: "assistant", content: `Main model failed: ${error instanceof Error ? error.message : String(error)}. Trying fallback.` });
@@ -83,40 +100,66 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
 
     const state = await browser.saveBrowserState(screenshots.at(-1));
     const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors(), task.scope);
+    const tracePath = await browser.saveTrace();
+    const stepsPerformed = [...browser.recorder.all(), "Groq tool loop completed."];
+    const coverage = buildCoverageSummary({
+      task,
+      state,
+      screenshots,
+      stepsPerformed,
+      loginResult
+    });
+    const finalStatus = statusWithCoverage(
+      detected.bugs.length + detected.uxIssues.length + detected.missingValidations.length > 0,
+      coverage
+    );
     const context: RunContext = {
       mode: "groq",
       headed,
       startedAt,
       task,
       generatedLeads,
-      stepsPerformed: [...browser.recorder.all(), "Groq tool loop completed."],
+      stepsPerformed,
       bugs: detected.bugs,
       uxIssues: detected.uxIssues,
       missingValidations: detected.missingValidations,
       consoleErrors: browser.getConsoleErrors(),
       networkErrors: browser.getNetworkErrors(),
       screenshots,
+      tracePath,
       browserState: state,
+      coverage,
       qaChecklist: detected.checklist,
       memoryNotes: [
         `QA profile: ${task.qaProfile}`,
         `Risk tier: ${detected.riskTier}`,
+        `Coverage confidence: ${coverage.confidence}`,
         `Clickable elements indexed: ${state.clickableElements.length}`,
+        ...(tracePath ? [`Trace: ${tracePath}`] : []),
         "Groq should prefer indexed elements and safe selectors from browser state.",
+        ...coverage.notes,
         ...detected.guidanceNotes
       ],
-      loginResult: task.credentials ? "Credentials configured; Groq can use safe task steps/tools without printing secrets." : "No credentials provided.",
-      finalStatus: detected.bugs.length ? "Partial Pass" : "Pass"
+      loginResult,
+      finalStatus
     };
     return { context, reports: writeReports(context) };
   } catch (error) {
+    const tracePath = await browser.saveTrace().catch(() => undefined);
+    const stepsPerformed = browser.recorder.all();
+    const coverage = buildCoverageSummary({
+      task,
+      screenshots,
+      stepsPerformed,
+      loginResult
+    });
     const context: RunContext = {
       mode: "groq",
       headed,
       startedAt,
       task,
       generatedLeads,
-      stepsPerformed: browser.recorder.all(),
+      stepsPerformed,
       bugs: [{
         title: "Groq API mode failed",
         severity: "High",
@@ -129,9 +172,11 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
       consoleErrors: browser.getConsoleErrors(),
       networkErrors: browser.getNetworkErrors(),
       screenshots,
+      tracePath,
+      coverage,
       qaChecklist: {},
-      memoryNotes: [],
-      loginResult: "Not completed.",
+      memoryNotes: [...coverage.notes, ...(tracePath ? [`Trace: ${tracePath}`] : [])],
+      loginResult,
       finalStatus: "Fail"
     };
     return { context, reports: writeReports(context) };

@@ -65,6 +65,15 @@ function issueMatrixRows(context: RunContext): Row[] {
     Priority: issue.severity,
     Status: context.finalStatus === "Fail" ? "Blocked" : "Open"
   }));
+  if (!rows.length && context.coverage && context.finalStatus !== "Pass") {
+    return [{
+      Module: "Coverage",
+      Issue: "Coverage incomplete",
+      Description: clearText(`${context.coverage.notes.join(" ")} Not tested: ${context.coverage.notTested}. Needs verification: ${context.coverage.needsVerification}. Blocked: ${context.coverage.blocked}.`),
+      Priority: context.coverage.blocked ? "High" : "Medium",
+      Status: context.coverage.blocked ? "Blocked" : "Needs Verification"
+    }];
+  }
   return rows.length ? rows : [{
     Module: "Lead Module",
     Issue: "No issue found",
@@ -107,6 +116,26 @@ function summaryRows(context: RunContext): Row[] {
       Value: context.screenshots.length,
       Notes: context.screenshots.length ? "Screenshots are embedded in the Screenshots sheet." : "No screenshots captured."
     },
+    {
+      Metric: "Coverage Confidence",
+      Value: context.coverage?.confidence || "Not generated",
+      Notes: context.coverage?.notes.join(" ") || ""
+    },
+    {
+      Metric: "Coverage Blockers",
+      Value: context.coverage?.blocked || 0,
+      Notes: "Blocked coverage rows should be resolved before claiming full pass."
+    },
+    {
+      Metric: "Not Tested Areas",
+      Value: context.coverage?.notTested || 0,
+      Notes: "These areas were requested but do not have deterministic evidence."
+    },
+    {
+      Metric: "Trace",
+      Value: context.tracePath || "No trace captured",
+      Notes: context.tracePath ? "Playwright trace zip path." : ""
+    },
     ...byPriority.map((row) => ({
       Metric: `${row.Priority} Issues`,
       Value: row.Count,
@@ -138,6 +167,28 @@ function checklistRows(checklist?: Record<string, string>): Row[] {
     index: index + 1,
     check,
     status
+  }));
+}
+
+function coverageRows(context: RunContext): Row[] {
+  const rows = context.coverage?.items || [];
+  if (!rows.length) {
+    return [{
+      Module: "Coverage",
+      "Actions Attempted": "No coverage summary generated.",
+      Evidence: "",
+      Status: "Not Tested",
+      Confidence: "Low",
+      Blocker: "Coverage builder did not run."
+    }];
+  }
+  return rows.map((item) => ({
+    Module: item.module,
+    "Actions Attempted": clearText(item.actionsAttempted),
+    Evidence: clearText(item.evidence),
+    Status: item.status,
+    Confidence: item.confidence,
+    Blocker: clearText(item.blocker || "")
   }));
 }
 
@@ -189,11 +240,17 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
         consoleErrors: context.consoleErrors.length,
         networkErrors: context.networkErrors.length,
         screenshots: context.screenshots.length,
+        tracePath: context.tracePath || "",
+        coverageConfidence: context.coverage?.confidence || "Not generated",
+        coverageBlocked: context.coverage?.blocked || 0,
+        coverageNotTested: context.coverage?.notTested || 0,
+        coverageNeedsVerification: context.coverage?.needsVerification || 0,
         generatedLeads: context.generatedLeads.length
       }]
     },
     { name: "Bugs", rows: issueRows([...context.bugs, ...context.uxIssues, ...context.missingValidations]) },
     { name: "Test Steps", rows: listRows(context.stepsPerformed, "step") },
+    { name: "Coverage", rows: coverageRows(context) },
     { name: "Issue Matrix", rows: issueMatrixRows(context) },
     { name: "Test Data", rows: leadRows(context.generatedLeads) },
     { name: "UX Issues", rows: issueRows(context.uxIssues) },
@@ -345,8 +402,12 @@ function preferredColumnWidth(header: string): number | undefined {
     Module: 26,
     Issue: 36,
     Description: 95,
+    "Actions Attempted": 55,
+    Evidence: 70,
     Priority: 14,
     Status: 16,
+    Confidence: 14,
+    Blocker: 60,
     Steps: 55,
     Expected: 44,
     Actual: 55,
@@ -511,7 +572,7 @@ function cellStyle(value: CellValue, rowIndex: number, header?: string): number 
     if (value === "Pass" || value === "Fixed") return 7;
     if (value === "Blocked") return 3;
     if (value === "Open") return 4;
-    if (value === "Needs Verification") return 5;
+    if (value === "Needs Verification" || value === "Partial" || value === "Not Tested") return 5;
   }
   return 2;
 }

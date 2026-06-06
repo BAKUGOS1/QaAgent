@@ -1,0 +1,25 @@
+{
+  "name": "qa-agent",
+  "version": "0.1.0",
+  "description": "Claude Code plugin for running safe website QA with the QaAgent Playwright framework.",
+  "author": {
+    "name": "BAKUGOS1",
+    "url": "https://github.com/BAKUGOS1"
+  },
+  "homepage": "https://github.com/BAKUGOS1/QaAgent#readme",
+  "repository": "https://github.com/BAKUGOS1/QaAgent",
+  "keywords": [
+    "qa",
+    "playwright",
+    "claude-code",
+    "browser-testing",
+    "test-automation",
+    "website-qa"
+  ],
+  "commands": [
+    "./commands/"
+  ],
+  "skills": [
+    "./skills/"
+  ]
+}

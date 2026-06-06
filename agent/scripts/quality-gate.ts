@@ -31,7 +31,24 @@ function run(name: string, command: string, args: string[]): void {
 }
 
 function secretScan(): void {
-  const roots = ["agent/src", "agent/scripts", "agent/tests", "agent/tasks", "agent/memory", ".codex", "README.md", "AGENTS.md", ".env.example"];
+  const roots = [
+    "agent/src",
+    "agent/scripts",
+    "agent/tests",
+    "agent/tasks",
+    "agent/memory",
+    ".codex",
+    ".agents",
+    "plugins",
+    "docs",
+    "README.md",
+    "AGENTS.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "package.json",
+    "package-lock.json",
+    ".env.example"
+  ];
   const files = roots.flatMap((root) => listFiles(root)).filter((file) => !isIgnored(file));
   const patterns = [
     { name: "Groq API key", pattern: /gsk_[A-Za-z0-9_-]{20,}/ },

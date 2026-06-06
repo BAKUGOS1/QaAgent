@@ -12,6 +12,7 @@ export class BrowserAgent {
   private browser?: Browser;
   private context?: BrowserContext;
   private page?: Page;
+  private traceStarted = false;
   private readonly consoleListener = new ConsoleListener();
   private readonly networkListener = new NetworkListener();
   readonly recorder = new Recorder();
@@ -33,6 +34,10 @@ export class BrowserAgent {
       this.context = await this.browser.newContext();
       this.page = await this.context.newPage();
     }
+    await this.context.tracing.start({ screenshots: true, snapshots: true, sources: true }).then(() => {
+      this.traceStarted = true;
+      this.recorder.record("Started Playwright trace capture");
+    }).catch(() => undefined);
     this.consoleListener.attach(this.page);
     this.networkListener.attach(this.page);
   }
@@ -183,6 +188,18 @@ export class BrowserAgent {
   }
 
   async saveTrace(): Promise<string | undefined> {
-    return undefined;
+    if (!this.context || !this.traceStarted) return undefined;
+    const dir = path.join(process.cwd(), "agent", "artifacts", "traces");
+    ensureDir(dir);
+    const filePath = path.join(dir, `${timestampForFile()}-trace.zip`);
+    try {
+      await this.context.tracing.stop({ path: filePath });
+      this.traceStarted = false;
+      this.recorder.record(`Saved Playwright trace ${filePath}`);
+      return filePath;
+    } catch {
+      this.traceStarted = false;
+      return undefined;
+    }
   }
 }

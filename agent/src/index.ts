@@ -3,6 +3,7 @@ import { parseCli } from "./cli.js";
 import { runCodexDriver } from "./codex-agent/codex-driver.js";
 import { runGroqToolLoop } from "./api-agent/groq-tool-loop.js";
 import { BrowserAgent } from "./browser/browser-agent.js";
+import { runConfiguredLogin } from "./browser/login-runner.js";
 
 async function main(): Promise<void> {
   const options = parseCli();
@@ -13,11 +14,15 @@ async function main(): Promise<void> {
     try {
       await browser.openUrl(options.task.websiteUrl);
       await browser.waitForLoad();
-      const screenshot = await browser.screenshot("state-only");
+      const screenshots: string[] = [];
+      screenshots.push(await browser.screenshot("state-only"));
+      const login = await runConfiguredLogin(browser, options.task, screenshots);
+      const screenshot = screenshots.at(-1);
       const state = await browser.saveBrowserState(screenshot);
       console.log("\nBrowser state saved.");
       console.log("State JSON: agent/artifacts/state/latest-browser-state.json");
-      console.log(`Screenshot: ${screenshot}`);
+      if (screenshot) console.log(`Screenshot: ${screenshot}`);
+      console.log(`Login: ${login.resultText}`);
       console.log(`Clickable elements: ${state.clickableElements.length}`);
     } finally {
       await browser.close();

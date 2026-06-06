@@ -1,6 +1,8 @@
 export type AgentMode = "codex" | "groq";
 export type Severity = "Critical" | "High" | "Medium" | "Low";
 export type FinalQaStatus = "Pass" | "Partial Pass" | "Fail";
+export type CoverageStatus = "Pass" | "Partial" | "Blocked" | "Needs Verification" | "Not Tested";
+export type CoverageConfidence = "High" | "Medium" | "Low";
 export type QaProfile =
   | "smoke"
   | "functional"
@@ -119,6 +121,28 @@ export interface QaIssue {
   status?: string;
 }
 
+export interface CoverageItem {
+  module: string;
+  actionsAttempted: string;
+  evidence: string;
+  status: CoverageStatus;
+  blocker?: string;
+  confidence: CoverageConfidence;
+}
+
+export interface CoverageSummary {
+  modulesVisited: number;
+  requiredModules: number;
+  screenshotsCaptured: number;
+  actionsAttempted: number;
+  notTested: number;
+  needsVerification: number;
+  blocked: number;
+  confidence: CoverageConfidence;
+  notes: string[];
+  items: CoverageItem[];
+}
+
 export interface IndexedElement {
   index: number;
   tag: string;
@@ -177,7 +201,9 @@ export interface RunContext {
   consoleErrors: string[];
   networkErrors: string[];
   screenshots: string[];
+  tracePath?: string;
   browserState?: BrowserState;
+  coverage?: CoverageSummary;
   qaChecklist?: Record<string, string>;
   memoryNotes?: string[];
   loginResult: string;

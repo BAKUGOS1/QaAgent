@@ -43,11 +43,14 @@ async function main(): Promise<void> {
   assert.ok(fs.existsSync(result.reports.jsonPath), "json report missing");
   assert.ok(fs.existsSync(result.reports.excelPath), "excel report missing");
   assert.ok(result.context.screenshots.length >= 1, "screenshot not captured");
+  assert.ok(result.context.tracePath && fs.existsSync(result.context.tracePath), "trace not captured");
+  assert.ok(result.context.coverage?.items.length, "coverage summary missing");
   assert.ok(fs.existsSync("agent/artifacts/state/latest-browser-state.json"), "browser state missing");
   assert.ok(result.context.browserState?.clickableElements.length !== undefined, "clickable index missing");
 
   const excelBytes = fs.readFileSync(result.reports.excelPath, "utf8");
   assert.ok(excelBytes.includes("Bug Report"), "user-facing bug report sheet missing from excel");
+  assert.ok(excelBytes.includes("Coverage"), "coverage sheet missing from excel");
   assert.ok(excelBytes.includes("xl/media/"), "embedded screenshot media missing from excel");
   assert.ok(excelBytes.includes("xl/styles.xml"), "excel styles missing");
   assert.ok(excelBytes.includes("customWidth=\"1\""), "excel column widths missing");

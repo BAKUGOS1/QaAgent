@@ -20,6 +20,20 @@ function issueMatrix(context: RunContext): string {
     status: context.finalStatus === "Fail" ? "Blocked" : "Open"
   }));
   if (rows.length === 0) {
+    if (context.coverage && context.finalStatus !== "Pass") {
+      rows.push({
+        module: "Coverage",
+        issue: "Coverage incomplete",
+        description: `${context.coverage.notes.join(" ")} Not tested: ${context.coverage.notTested}. Needs verification: ${context.coverage.needsVerification}. Blocked: ${context.coverage.blocked}.`,
+        priority: context.coverage.blocked ? "High" : "Medium",
+        status: context.coverage.blocked ? "Blocked" : "Needs Verification"
+      });
+      return [
+        "| Module | Issue | Description | Priority | Status |",
+        "|---|---|---|---|---|",
+        ...rows.map((row) => `| ${escapeTable(row.module)} | ${escapeTable(row.issue)} | ${escapeTable(row.description)} | ${escapeTable(row.priority)} | ${escapeTable(row.status)} |`)
+      ].join("\n");
+    }
     rows.push({
       module: "Lead Module",
       issue: "No issue found",
@@ -32,6 +46,16 @@ function issueMatrix(context: RunContext): string {
     "| Module | Issue | Description | Priority | Status |",
     "|---|---|---|---|---|",
     ...rows.map((row) => `| ${escapeTable(row.module)} | ${escapeTable(row.issue)} | ${escapeTable(row.description)} | ${escapeTable(row.priority)} | ${escapeTable(row.status)} |`)
+  ].join("\n");
+}
+
+function coverageMatrix(context: RunContext): string {
+  const rows = context.coverage?.items || [];
+  if (!rows.length) return "No coverage summary generated.";
+  return [
+    "| Module | Actions Attempted | Evidence | Status | Confidence | Blocker |",
+    "|---|---|---|---|---|---|",
+    ...rows.map((row) => `| ${escapeTable(row.module)} | ${escapeTable(row.actionsAttempted)} | ${escapeTable(row.evidence)} | ${escapeTable(row.status)} | ${escapeTable(row.confidence)} | ${escapeTable(row.blocker || "")} |`)
   ].join("\n");
 }
 
@@ -58,6 +82,8 @@ export function renderMarkdownReport(context: RunContext): string {
 - Browser mode: ${context.headed ? "headed" : "headless"}
 - Login result: ${context.loginResult}
 - Final QA status: ${context.finalStatus}
+- Coverage confidence: ${context.coverage?.confidence || "Not generated"}
+- Trace: ${context.tracePath || "No trace captured"}
 
 ## Steps Performed
 
@@ -70,6 +96,12 @@ ${context.generatedLeads.length ? context.generatedLeads.map((lead) => `- ${lead
 ## Issue Matrix
 
 ${issueMatrix(context)}
+
+## Coverage
+
+${coverageMatrix(context)}
+
+${context.coverage?.notes.length ? context.coverage.notes.map((note) => `- ${note}`).join("\n") : ""}
 
 ## Browser State
 

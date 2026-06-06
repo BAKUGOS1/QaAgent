@@ -6,6 +6,7 @@
   "plugins": [
     {
       "name": "qa-agent",
+      "version": "0.1.0",
       "source": {
         "source": "local",
         "path": "./plugins/qa-agent"
