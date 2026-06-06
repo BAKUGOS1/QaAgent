@@ -18,7 +18,7 @@
 
 ## Demo
 
-![QA Agent demo](docs/assets/qa-agent-demo.gif)
+![QA Agent demo](docs/assets/qa-agent-demo.svg)
 
 ## Why Star This Repo
 

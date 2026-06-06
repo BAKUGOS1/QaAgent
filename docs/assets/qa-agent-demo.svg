@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="700" viewBox="0 0 1280 700" role="img" aria-labelledby="title desc">
+  <title id="title">QA Agent visual demo</title>
+  <desc id="desc">A polished visual walkthrough of QaAgent moving from task input through browser automation to reports.</desc>
+  <defs>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#071923"/>
+      <stop offset="58%" stop-color="#123D4A"/>
+      <stop offset="100%" stop-color="#0D9488"/>
+    </linearGradient>
+    <linearGradient id="page" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#EEF6F7"/>
+    </linearGradient>
+    <style>
+      .title { font: 800 42px Inter, Segoe UI, Arial, sans-serif; fill: #FFFFFF; letter-spacing: 0; }
+      .subtitle { font: 400 17px Inter, Segoe UI, Arial, sans-serif; fill: #D7FFFA; letter-spacing: 0; }
+      .card { fill: #FFFFFF; stroke: #D8E4EA; stroke-width: 1.3; rx: 18; }
+      .active { fill: #ECFDF5; stroke: #14B8A6; stroke-width: 2.4; }
+      .label { font: 800 18px Inter, Segoe UI, Arial, sans-serif; fill: #0F172A; letter-spacing: 0; }
+      .body { font: 400 14px Inter, Segoe UI, Arial, sans-serif; fill: #475569; letter-spacing: 0; }
+      .terminalTitle { font: 800 17px Inter, Segoe UI, Arial, sans-serif; fill: #E5E7EB; letter-spacing: 0; }
+      .terminal { font: 500 15px Consolas, Menlo, monospace; fill: #CBD5E1; letter-spacing: 0; }
+      .ok { fill: #A7F3D0; }
+      .arrow { stroke: #64748B; stroke-width: 2.6; fill: none; marker-end: url(#arrow); }
+      .caption { font: 600 14px Inter, Segoe UI, Arial, sans-serif; fill: #64748B; letter-spacing: 0; }
+    </style>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L12,7 L2,12 Z" fill="#64748B"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="700" fill="url(#page)"/>
+  <rect x="34" y="34" width="1212" height="126" rx="28" fill="url(#hero)"/>
+  <text class="title" x="76" y="88">QaAgent in 30 seconds</text>
+  <text class="subtitle" x="78" y="124">Give it a target, let Playwright gather evidence, then ship a report that tells the truth.</text>
+
+  <g transform="translate(58 210)">
+    <rect class="card active" x="0" y="0" width="178" height="126"/>
+    <text class="label" x="22" y="38">Task Input</text>
+    <text class="body" x="22" y="68">URL, scope, login,</text>
+    <text class="body" x="22" y="91">safety, report config</text>
+
+    <path class="arrow" d="M190 64H232"/>
+    <rect class="card" x="244" y="0" width="178" height="126"/>
+    <text class="label" x="266" y="38">Smart Login</text>
+    <text class="body" x="266" y="68">Env credentials,</text>
+    <text class="body" x="266" y="91">success checks</text>
+
+    <path class="arrow" d="M434 64H476"/>
+    <rect class="card" x="488" y="0" width="178" height="126"/>
+    <text class="label" x="510" y="38">Playwright</text>
+    <text class="body" x="510" y="68">Safe actions,</text>
+    <text class="body" x="510" y="91">screens, traces</text>
+
+    <path class="arrow" d="M678 64H720"/>
+    <rect class="card" x="732" y="0" width="178" height="126"/>
+    <text class="label" x="754" y="38">QA Engine</text>
+    <text class="body" x="754" y="68">Forms, tables, UX,</text>
+    <text class="body" x="754" y="91">console, network</text>
+
+    <path class="arrow" d="M922 64H964"/>
+    <rect class="card" x="976" y="0" width="178" height="126"/>
+    <text class="label" x="998" y="38">Report</text>
+    <text class="body" x="998" y="68">Excel bugs, coverage,</text>
+    <text class="body" x="998" y="91">evidence paths</text>
+  </g>
+
+  <rect x="92" y="414" width="996" height="186" rx="20" fill="#0F172A"/>
+  <rect x="92" y="414" width="996" height="44" rx="20" fill="#111827"/>
+  <rect x="92" y="436" width="996" height="22" fill="#111827"/>
+  <text class="terminalTitle" x="124" y="443">1. Run a safe local QA pass</text>
+  <text class="terminal ok" x="124" y="492">$ npm run agent:codex -- --url https://example.com --task "Smoke test homepage" --headed</text>
+  <text class="terminal" x="124" y="526">Captures screenshots, trace zip, browser state, console errors, and network errors.</text>
+  <text class="terminal" x="124" y="560">Report status includes Pass, Partial, Blocked, Needs Verification, and Not Tested.</text>
+
+  <text class="caption" x="96" y="642">Reports, screenshots, traces, and browser state stay local and ignored by Git.</text>
+</svg>
