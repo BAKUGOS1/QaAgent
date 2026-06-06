@@ -40,6 +40,11 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Keep Codex/no-API and Groq/API modes working.
 - Prioritize high-risk journeys first: auth, create/save/update, money, data loss, and destructive actions.
 - Preserve screenshot/state evidence before marking a flow flaky.
+- When a flow fails under one condition, test alternate valid conditions before calling the whole feature failed.
+- Separate save feedback from data persistence. If a form stays open after Save, verify whether the record exists through table refresh, search, pagination, or direct visible evidence.
+- For missing row actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, pagination, archive tabs, and exact accessible labels before reporting the action missing.
+- Use exact locators when labels overlap, for example `Select row 1` can also match `Select row 10`.
+- If a destructive alternative appears, such as Archive instead of Delete, capture evidence and ask before confirming it unless the user explicitly allowed that action.
 
 ## Rules
 

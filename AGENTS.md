@@ -42,6 +42,14 @@ Bug reports must be direct and complete:
 - Avoid unnecessary long sentences.
 - Mark uncertain bugs as `Needs Verification`.
 
+Professional QA runs must explore conditions, not stop at the first blocked path:
+
+- If one valid condition fails, try other valid conditions and report which ones pass/fail.
+- Distinguish UI feedback from persistence. A drawer staying open after Save is a bug, but record creation must still be verified through search, table refresh, pagination, or direct evidence.
+- For missing actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, tabs, and exact accessible labels before marking the action unavailable.
+- Use strict/exact selectors when accessible labels overlap, such as `Select row 1` versus `Select row 10`.
+- If only a destructive alternative is available, such as Archive instead of Delete, capture evidence and ask before confirming unless the user explicitly allowed it.
+
 ## Report Style
 
 User-facing issue table: `Module`, `Issue`, `Description`, `Priority`, `Status`.
