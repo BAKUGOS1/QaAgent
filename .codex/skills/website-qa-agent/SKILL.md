@@ -41,8 +41,12 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Prioritize high-risk journeys first: auth, create/save/update, money, data loss, and destructive actions.
 - Preserve screenshot/state evidence before marking a flow flaky.
 - When a flow fails under one condition, test alternate valid conditions before calling the whole feature failed.
+- When reporting condition testing, state both sides clearly: `Added/searchable` and `Not added/not searchable`, with exact condition names and record names.
 - Separate save feedback from data persistence. If a form stays open after Save, verify whether the record exists through table refresh, search, pagination, or direct visible evidence.
+- If save feedback is wrong or missing, name the exact location, such as `Add Lead drawer footer / Save action`, and state whether success toast, drawer close, or inline error was missing.
 - For missing row actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, pagination, archive tabs, and exact accessible labels before reporting the action missing.
+- If a row/menu action is not found, open the record detail drawer before reporting it missing. Try visible company/detail links and record links, not only plain row/name cells.
+- Inspect icon-only buttons by SVG/title/aria/parent button. Trash/delete can appear as an unlabeled `trash` icon inside a detail drawer bottom action area.
 - Use exact locators when labels overlap, for example `Select row 1` can also match `Select row 10`.
 - If a destructive alternative appears, such as Archive instead of Delete, capture evidence and ask before confirming it unless the user explicitly allowed that action.
 

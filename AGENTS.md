@@ -45,8 +45,12 @@ Bug reports must be direct and complete:
 Professional QA runs must explore conditions, not stop at the first blocked path:
 
 - If one valid condition fails, try other valid conditions and report which ones pass/fail.
+- For condition matrices, write exact pass/fail evidence in the user-facing report: `Added/searchable: ...` and `Not added/not searchable: ...`.
 - Distinguish UI feedback from persistence. A drawer staying open after Save is a bug, but record creation must still be verified through search, table refresh, pagination, or direct evidence.
-- For missing actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, tabs, and exact accessible labels before marking the action unavailable.
+- If save feedback is misleading, report the exact location such as `Add Lead drawer footer / Save action`, and say whether success toast, drawer close, or inline validation was missing.
+- For missing actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, tabs, detail drawers, and exact accessible labels before marking the action unavailable.
+- Open record details through company/detail links when plain row or name cells do not open details.
+- Inspect icon-only controls through SVG/title/aria/parent button metadata. Delete may appear as an unlabeled trash icon in a detail drawer bottom action area.
 - Use strict/exact selectors when accessible labels overlap, such as `Select row 1` versus `Select row 10`.
 - If only a destructive alternative is available, such as Archive instead of Delete, capture evidence and ask before confirming unless the user explicitly allowed it.
 
