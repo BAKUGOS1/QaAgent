@@ -229,7 +229,14 @@ function conciseText(value: string): string {
 }
 
 function clearText(value: string): string {
-  return value.replace(/\s+/g, " ").trim();
+  return value
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .split("\n")
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function buildXlsxFiles(sheets: Sheet[]): Record<string, Buffer> {
@@ -296,7 +303,11 @@ function sheetXml(rows: Row[], hasDrawing: boolean, bodyRowHeight?: number): str
   const xmlRows = [headers, ...actualRows.map((row) => headers.map((header) => row[header] ?? ""))]
     .map((values, rowIndex) => {
       const cells = values.map((value, columnIndex) => cellXml(value, columnIndex, rowIndex)).join("");
-      const height = bodyRowHeight && rowIndex > 0 ? ` ht="${bodyRowHeight}" customHeight="1"` : "";
+      const lineCount = Math.max(...values.map((value) => String(value).split("\n").length));
+      const dynamicHeight = rowIndex > 0 && lineCount > 1 ? Math.min(220, 18 + lineCount * 17) : undefined;
+      const configuredHeight = bodyRowHeight && rowIndex > 0 ? bodyRowHeight : undefined;
+      const rowHeight = Math.max(dynamicHeight || 0, configuredHeight || 0);
+      const height = rowHeight ? ` ht="${rowHeight}" customHeight="1"` : "";
       return `<row r="${rowIndex + 1}"${height}>${cells}</row>`;
     }).join("");
   const cols = hasDrawing ? `<cols><col min="1" max="1" width="10" customWidth="1"/><col min="2" max="2" width="70" customWidth="1"/><col min="3" max="3" width="36" customWidth="1"/></cols>` : "";
@@ -438,7 +449,9 @@ function cellXml(value: CellValue, columnIndex: number, rowIndex: number): strin
   const ref = `${columnName(columnIndex)}${rowIndex + 1}`;
   if (typeof value === "number") return `<c r="${ref}"><v>${value}</v></c>`;
   if (typeof value === "boolean") return `<c r="${ref}" t="b"><v>${value ? 1 : 0}</v></c>`;
-  return `<c r="${ref}" t="inlineStr"><is><t>${escapeXml(String(value))}</t></is></c>`;
+  const stringValue = String(value);
+  const preserveSpace = /(^\s|\s$|\n)/.test(stringValue) ? ' xml:space="preserve"' : "";
+  return `<c r="${ref}" t="inlineStr"><is><t${preserveSpace}>${escapeXml(stringValue)}</t></is></c>`;
 }
 
 function columnName(index: number): string {

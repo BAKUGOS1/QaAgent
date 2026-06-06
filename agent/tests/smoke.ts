@@ -1,11 +1,14 @@
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import assert from "node:assert";
 import { loadConfig } from "../src/config.js";
 import { GroqClient } from "../src/api-agent/groq-client.js";
 import { runCodexDriver } from "../src/codex-agent/codex-driver.js";
 import { defaultSafety, assertSafeAction } from "../src/shared/safety-guard.js";
 import { createRandomLeadData } from "../src/data/lead-data.js";
-import type { QaTask } from "../src/shared/types.js";
+import { writeExcelReport } from "../src/reports/excel.js";
+import type { QaTask, RunContext } from "../src/shared/types.js";
 
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -46,6 +49,31 @@ async function main(): Promise<void> {
   const excelBytes = fs.readFileSync(result.reports.excelPath, "utf8");
   assert.ok(excelBytes.includes("Bug Report"), "user-facing bug report sheet missing from excel");
   assert.ok(excelBytes.includes("xl/media/"), "embedded screenshot media missing from excel");
+  const multilineExcelPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "qa-agent-smoke-")), "multiline.xlsx");
+  const multilineContext: RunContext = {
+    mode: "codex",
+    headed: false,
+    startedAt: new Date().toISOString(),
+    task,
+    generatedLeads: [],
+    stepsPerformed: [],
+    bugs: [{
+      title: "Some lead conditions do not persist",
+      severity: "High",
+      area: "Lead Module",
+      description: "Result: 1/5 lead conditions saved.\nPassed:\n1. Tag/source/owner - saved and searchable.\nFailed:\n1. Minimal contact fields - not searchable after Save."
+    }],
+    uxIssues: [],
+    missingValidations: [],
+    consoleErrors: [],
+    networkErrors: [],
+    screenshots: [],
+    loginResult: "Not required",
+    finalStatus: "Partial Pass"
+  };
+  writeExcelReport(multilineContext, multilineExcelPath);
+  const multilineExcelBytes = fs.readFileSync(multilineExcelPath, "utf8");
+  assert.ok(multilineExcelBytes.includes("Result: 1/5 lead conditions saved.\nPassed:"), "multiline descriptions must keep line breaks");
 
   const excelOnlyTask: QaTask = {
     ...task,

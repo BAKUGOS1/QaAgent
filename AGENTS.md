@@ -40,12 +40,13 @@ Bug reports must be direct and complete:
 - `Description` says what error happened, what is broken, and where it happened.
 - Do not cut important details.
 - Avoid unnecessary long sentences.
+- Do not force complex evidence into one short sentence. For multi-condition bugs, use numbered lines inside the `Description` cell.
 - Mark uncertain bugs as `Needs Verification`.
 
 Professional QA runs must explore conditions, not stop at the first blocked path:
 
 - If one valid condition fails, try other valid conditions and report which ones pass/fail.
-- For condition matrices, write exact pass/fail evidence in the user-facing report: `Added/searchable: ...` and `Not added/not searchable: ...`.
+- For condition matrices, write exact pass/fail evidence in numbered form: result count, passed cases, failed cases, condition name, record name, and what happened.
 - Distinguish UI feedback from persistence. A drawer staying open after Save is a bug, but record creation must still be verified through search, table refresh, pagination, or direct evidence.
 - If save feedback is misleading, report the exact location such as `Add Lead drawer footer / Save action`, and say whether success toast, drawer close, or inline validation was missing.
 - For missing actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, tabs, detail drawers, and exact accessible labels before marking the action unavailable.

@@ -28,6 +28,11 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Keep `Issue` concise.
 - Keep `Description` clear and complete. Do not cut important details.
 - Avoid unnecessary long sentences.
+- Do not compress complex evidence into one comma-heavy sentence. If a bug depends on multiple cases, use numbered lines inside the `Description` cell.
+- Preferred complex-case format:
+  `Result: 1/5 lead conditions saved.`
+  `Passed: 1. Tag/source/owner - saved and searchable.`
+  `Failed: 1. Minimal contact fields - not searchable after Save. 2. Full address - not searchable after Save.`
 - Use this table shape for user-facing reports: `Module`, `Issue`, `Description`, `Priority`, `Status`.
 - Generate Excel only by default. Generate Markdown/JSON only when explicitly requested for debugging or automation.
 - Do not generate CSV.
@@ -41,7 +46,7 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Prioritize high-risk journeys first: auth, create/save/update, money, data loss, and destructive actions.
 - Preserve screenshot/state evidence before marking a flow flaky.
 - When a flow fails under one condition, test alternate valid conditions before calling the whole feature failed.
-- When reporting condition testing, state both sides clearly: `Added/searchable` and `Not added/not searchable`, with exact condition names and record names.
+- When reporting condition testing, state both sides clearly with numbered lines: result count, passed cases, failed cases, exact condition names, record names, and what happened in each case.
 - Separate save feedback from data persistence. If a form stays open after Save, verify whether the record exists through table refresh, search, pagination, or direct visible evidence.
 - If save feedback is wrong or missing, name the exact location, such as `Add Lead drawer footer / Save action`, and state whether success toast, drawer close, or inline error was missing.
 - For missing row actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, pagination, archive tabs, and exact accessible labels before reporting the action missing.
