@@ -24,6 +24,7 @@ npm install
 npx playwright install
 npm run typecheck
 npm run test:smoke
+npm run quality:gate
 ```
 
 The smoke test verifies Codex/no-API mode, browser state capture, screenshot capture, report writing, Excel media embedding, missing Groq key handling, safety guards, and generated test data.
@@ -44,6 +45,7 @@ npm run agent:state -- --url "https://example.com" --headed
 npm run agent:api -- --url "https://example.com" --task "Full professional QA" --headed
 npm run test:smoke
 npm run typecheck
+npm run quality:gate
 ```
 
 Useful scripts:
@@ -56,6 +58,7 @@ Useful scripts:
 | `npm run agent:state` | Capture latest browser state without a full report. |
 | `npm run test:smoke` | Run the smoke verification script. |
 | `npm run typecheck` | Run TypeScript checks. |
+| `npm run quality:gate` | Run typecheck, smoke, audit, secret scan, and report sanity. |
 
 ## Codex / No-API Mode
 
@@ -229,6 +232,12 @@ agent/reports/           Local generated reports
 This project uses `browser-use` as architecture inspiration only. Browser-use is Python-based; QA Agent remains TypeScript + Playwright. Inspired concepts include browser state extraction, clickable element indexes, custom tools, persistent sessions, screenshots, and task-based actions.
 
 Related notes live in `agent/integrations/browser-use/`.
+
+## ECC Inspiration
+
+This project also borrows process ideas from `affaan-m/ECC`: quality gates, security-first workflows, risk-based E2E testing, flaky-test handling, artifact discipline, and clear agent guide files. ECC is not installed or required.
+
+Related notes live in `agent/integrations/ecc/`.
 
 ## Troubleshooting
 

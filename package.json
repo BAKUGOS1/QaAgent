@@ -36,6 +36,7 @@
     "agent:state": "tsx agent/src/index.ts --mode codex --state-only",
     "test:agent": "playwright test",
     "test:smoke": "tsx agent/tests/smoke.ts",
+    "quality:gate": "tsx agent/scripts/quality-gate.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

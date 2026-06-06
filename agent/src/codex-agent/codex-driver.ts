@@ -19,7 +19,7 @@ export async function runCodexDriver(task: QaTask, headed: boolean): Promise<{ c
     screenshots.push(await browser.screenshot("initial"));
     screenshots.push(...await runExplicitTaskSteps(browser, task));
     const state = await browser.saveBrowserState(screenshots.at(-1));
-    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors());
+    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors(), task.scope);
     const context: RunContext = {
       mode: "codex",
       headed,
@@ -43,8 +43,10 @@ export async function runCodexDriver(task: QaTask, headed: boolean): Promise<{ c
       qaChecklist: detected.checklist,
       memoryNotes: [
         `QA profile: ${task.qaProfile}`,
+        `Risk tier: ${detected.riskTier}`,
         `Clickable elements indexed: ${state.clickableElements.length}`,
-        "Use agent/artifacts/state/latest-browser-state.json for selector planning."
+        "Use agent/artifacts/state/latest-browser-state.json for selector planning.",
+        ...detected.guidanceNotes
       ],
       loginResult: task.credentials ? "Credentials configured; explicit login steps required in task file or Codex interaction." : "No credentials provided.",
       finalStatus: detected.bugs.length ? "Partial Pass" : "Pass"

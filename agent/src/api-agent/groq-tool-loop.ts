@@ -66,7 +66,7 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
     }
 
     const state = await browser.saveBrowserState(screenshots.at(-1));
-    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors());
+    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors(), task.scope);
     const context: RunContext = {
       mode: "groq",
       headed,
@@ -84,8 +84,10 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
       qaChecklist: detected.checklist,
       memoryNotes: [
         `QA profile: ${task.qaProfile}`,
+        `Risk tier: ${detected.riskTier}`,
         `Clickable elements indexed: ${state.clickableElements.length}`,
-        "Groq should prefer indexed elements and safe selectors from browser state."
+        "Groq should prefer indexed elements and safe selectors from browser state.",
+        ...detected.guidanceNotes
       ],
       loginResult: task.credentials ? "Credentials configured; Groq can use safe task steps/tools without printing secrets." : "No credentials provided.",
       finalStatus: detected.bugs.length ? "Partial Pass" : "Pass"

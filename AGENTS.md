@@ -15,6 +15,7 @@ npx playwright install
 npm run agent:codex -- --url "https://example.com" --task "Smoke test homepage" --headed
 npm run agent:api -- --url "https://example.com" --task "Full professional QA" --headed
 npm run agent:state -- --url "https://example.com" --headed
+npm run quality:gate
 npm run test:smoke
 npm run typecheck
 ```
@@ -53,15 +54,41 @@ Blocked by default: delete, archive, payment, real message send, bulk update, se
 
 Allowed by default: safe navigation, screenshots, logs, create test data, edit test-created data, validation checks, search/filter/sort, pagination.
 
+Treat external systems as read-only by default. Do not push, merge, publish, send messages, change credentials, trigger payments, or modify third-party resources unless the user explicitly asks for that exact action.
+
+## ECC-Inspired Quality Gate
+
+This repo borrows the useful ECC idea of a manual quality gate without adopting ECC as a dependency.
+
+Before committing agent framework changes, run:
+
+```bash
+npm run quality:gate
+```
+
+The gate runs typecheck, smoke tests, high-severity npm audit, secret scan, and latest report sanity.
+
+## Risk And Flaky-Test Rules
+
+Prioritize QA by risk:
+
+- High: auth, money, data loss, create/save/update, destructive actions.
+- Medium: forms, search/filter/sort, tables, upload/download, mobile usability.
+- Low: copy, spacing, helper text, non-blocking polish.
+
+When a flow is flaky, preserve screenshot/state evidence first, replace fixed time waits with condition waits, and quarantine only after the failure is documented.
+
 ## Memory Rules
 
 Memory can store non-sensitive selectors, modules, known forms, known buttons, known issues, flaky areas, required fields, and run summaries.
 
 Memory must never store passwords, tokens, cookies, real customer data, payment data, or sensitive exports.
 
-## Browser-Use Inspiration
+## External Inspiration
 
 Browser-use is Python-based. This repo remains TypeScript + Playwright. Only these ideas are used as inspiration: browser state extraction, indexed clickable elements, custom tool layer, persistent sessions, screenshots, and task-based browser actions.
+
+ECC is used as process inspiration only: quality gate, security-first workflow, risk-based E2E testing, artifact discipline, and clear agent guide files. Details live in `agent/integrations/ecc/`.
 
 ## Done Criteria
 
@@ -70,6 +97,7 @@ Before finishing code changes, run:
 ```bash
 npm run typecheck
 npm run test:smoke
+npm run quality:gate
 ```
 
 For QA validation, run:
@@ -77,4 +105,3 @@ For QA validation, run:
 ```bash
 npm run agent:codex -- --url "https://example.com" --task "Smoke test homepage and generate report"
 ```
-

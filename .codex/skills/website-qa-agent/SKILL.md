@@ -19,7 +19,8 @@ npm run agent:codex -- --task-file <task-file> --headed
 8. Use indexed clickable elements from browser state to decide better selectors.
 9. Add explicit task steps when needed.
 10. Re-run focused tests.
-11. Produce a final developer-ready bug report.
+11. Run `npm run quality:gate` before pushing agent framework changes.
+12. Produce a final developer-ready bug report.
 
 ## Report Style
 
@@ -33,6 +34,8 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Do not push reports, screenshots, logs, traces, or `.env` files to GitHub.
 - Use browser state indexes when selector guessing is uncertain.
 - Keep Codex/no-API and Groq/API modes working.
+- Prioritize high-risk journeys first: auth, create/save/update, money, data loss, and destructive actions.
+- Preserve screenshot/state evidence before marking a flow flaky.
 
 ## Rules
 
@@ -40,6 +43,7 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Never print passwords in terminal output or reports.
 - Never store passwords, tokens, cookies, or sensitive customer data in memory.
 - Never perform delete, bulk update, payment, real message send, settings change, password change, or sensitive export unless explicitly allowed.
+- Treat external systems as read-only by default unless the user explicitly asks for a scoped action.
 - If destructive action is detected, stop and report: `Blocked by safety guard.`
 
 ## Useful Commands
@@ -50,4 +54,5 @@ npm run agent:codex -- --task-file agent/tasks/zoyo-lead-test.json --headed
 npm run agent:state -- --url "https://example.com" --headed
 npm run test:smoke
 npm run typecheck
+npm run quality:gate
 ```
