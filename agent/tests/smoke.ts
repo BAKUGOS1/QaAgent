@@ -49,6 +49,10 @@ async function main(): Promise<void> {
   const excelBytes = fs.readFileSync(result.reports.excelPath, "utf8");
   assert.ok(excelBytes.includes("Bug Report"), "user-facing bug report sheet missing from excel");
   assert.ok(excelBytes.includes("xl/media/"), "embedded screenshot media missing from excel");
+  assert.ok(excelBytes.includes("xl/styles.xml"), "excel styles missing");
+  assert.ok(excelBytes.includes("customWidth=\"1\""), "excel column widths missing");
+  assert.ok(excelBytes.includes("state=\"frozen\""), "excel frozen header missing");
+  assert.ok(excelBytes.includes(" s=\"1\""), "excel header style missing");
   const multilineExcelPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "qa-agent-smoke-")), "multiline.xlsx");
   const multilineContext: RunContext = {
     mode: "codex",

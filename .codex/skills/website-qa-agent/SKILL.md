@@ -25,6 +25,7 @@ npm run agent:codex -- --task-file <task-file> --headed
 ## Report Style
 
 - Write bugs directly: what error happened, what is broken, where it happened.
+- Use specific module/submodule names, not only generic module names. Examples: `Leads Table`, `Lead form`, `Lead form - Tags`, `Lead form - Side pane`, `Lead detail drawer`, `Lead delete`.
 - Keep `Issue` concise.
 - Keep `Description` clear and complete. Do not cut important details.
 - Avoid unnecessary long sentences.
@@ -38,6 +39,7 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Do not generate CSV.
 - Excel first sheet must be `Bug Report` with only user-facing bug rows.
 - Excel second sheet should be `Summary`; technical evidence sheets can follow after that.
+- Excel reports should be readable without manual fixing: set practical column widths, wrap text, use dynamic row heights, freeze/filter headers, and color header/priority/status cells.
 - Aggregate repeated duplicate bugs into one clear row. Do not repeat the same bug 10 times unless each row is materially different.
 - Excel reports must embed screenshots/images in the workbook when screenshots exist.
 - Do not push reports, screenshots, logs, traces, or `.env` files to GitHub.
@@ -49,6 +51,8 @@ npm run agent:codex -- --task-file <task-file> --headed
 - When reporting condition testing, state both sides clearly with numbered lines: result count, passed cases, failed cases, exact condition names, record names, and what happened in each case.
 - Separate save feedback from data persistence. If a form stays open after Save, verify whether the record exists through table refresh, search, pagination, or direct visible evidence.
 - If save feedback is wrong or missing, name the exact location, such as `Add Lead drawer footer / Save action`, and state whether success toast, drawer close, or inline error was missing.
+- Never trust toast text alone. After success/failure toasts, inspect network responses, console errors, inline validation, and final table/search state. If UI says success but API says error, report it as misleading feedback.
+- For delete flows, verify whether the API requires archive-first or another precondition. If response says something like `Only archived leads can be deleted`, report the wrong success toast and the unmet delete precondition.
 - For missing row actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, pagination, archive tabs, and exact accessible labels before reporting the action missing.
 - If a row/menu action is not found, open the record detail drawer before reporting it missing. Try visible company/detail links and record links, not only plain row/name cells.
 - Inspect icon-only buttons by SVG/title/aria/parent button. Trash/delete can appear as an unlabeled `trash` icon inside a detail drawer bottom action area.

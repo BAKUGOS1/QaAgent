@@ -38,6 +38,7 @@ Bug reports must be direct and complete:
 
 - `Issue` is concise.
 - `Description` says what error happened, what is broken, and where it happened.
+- `Module` should be specific enough to locate the bug, such as `Leads Table`, `Lead form - Tags`, `Lead form - Side pane`, `Lead detail drawer`, or `Lead delete`.
 - Do not cut important details.
 - Avoid unnecessary long sentences.
 - Do not force complex evidence into one short sentence. For multi-condition bugs, use numbered lines inside the `Description` cell.
@@ -49,6 +50,8 @@ Professional QA runs must explore conditions, not stop at the first blocked path
 - For condition matrices, write exact pass/fail evidence in numbered form: result count, passed cases, failed cases, condition name, record name, and what happened.
 - Distinguish UI feedback from persistence. A drawer staying open after Save is a bug, but record creation must still be verified through search, table refresh, pagination, or direct evidence.
 - If save feedback is misleading, report the exact location such as `Add Lead drawer footer / Save action`, and say whether success toast, drawer close, or inline validation was missing.
+- Never trust toast text alone. Compare toast text with network responses, console errors, inline validation, and final table/search state.
+- If UI says success but the API response says an action failed, report the toast/API mismatch. Example: delete toast says success while response says `Only archived leads can be deleted`.
 - For missing actions, inspect selected-row toolbar, row action menu, bulk toolbar, hover states, tabs, detail drawers, and exact accessible labels before marking the action unavailable.
 - Open record details through company/detail links when plain row or name cells do not open details.
 - Inspect icon-only controls through SVG/title/aria/parent button metadata. Delete may appear as an unlabeled trash icon in a detail drawer bottom action area.
@@ -59,7 +62,7 @@ Professional QA runs must explore conditions, not stop at the first blocked path
 
 User-facing issue table: `Module`, `Issue`, `Description`, `Priority`, `Status`.
 
-Excel is the default user-facing artifact. The first sheet must be `Bug Report` with the clean issue table only. The second sheet should be `Summary`. Technical evidence sheets can follow after that. Screenshots are embedded in the workbook when available.
+Excel is the default user-facing artifact. The first sheet must be `Bug Report` with the clean issue table only. The second sheet should be `Summary`. Technical evidence sheets can follow after that. Screenshots are embedded in the workbook when available. Excel must be readable without manual resizing: practical widths, wrapped text, dynamic row heights, frozen/filterable headers, and colored header/priority/status cells.
 
 Repeated duplicate bugs should be aggregated into one clear row. Keep raw evidence in the technical sheets instead of making the user-facing bug table noisy.
 

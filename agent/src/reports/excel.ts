@@ -262,6 +262,7 @@ function buildXlsxFiles(sheets: Sheet[]): Record<string, Buffer> {
 ${imageParts.hasPng ? '<Default Extension="png" ContentType="image/png"/>' : ""}
 ${imageParts.hasJpg ? '<Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="jpeg" ContentType="image/jpeg"/>' : ""}
 <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
 ${overrides}
 ${drawingOverrides}
 </Types>`),
@@ -276,8 +277,10 @@ ${drawingOverrides}
     "xl/_rels/workbook.xml.rels": xmlBuffer(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 ${workbookRels}
+<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
 </Relationships>`)
   };
+  files["xl/styles.xml"] = xmlBuffer(stylesXml());
 
   sheets.forEach((sheet, index) => {
     const drawing = imageParts.drawings.find((item) => item.sheetIndex === index);
@@ -302,22 +305,63 @@ function sheetXml(rows: Row[], hasDrawing: boolean, bodyRowHeight?: number): str
   const headers = Array.from(new Set(actualRows.flatMap((row) => Object.keys(row))));
   const xmlRows = [headers, ...actualRows.map((row) => headers.map((header) => row[header] ?? ""))]
     .map((values, rowIndex) => {
-      const cells = values.map((value, columnIndex) => cellXml(value, columnIndex, rowIndex)).join("");
+      const cells = values.map((value, columnIndex) => cellXml(value, columnIndex, rowIndex, headers[columnIndex])).join("");
       const lineCount = Math.max(...values.map((value) => String(value).split("\n").length));
       const dynamicHeight = rowIndex > 0 && lineCount > 1 ? Math.min(220, 18 + lineCount * 17) : undefined;
       const configuredHeight = bodyRowHeight && rowIndex > 0 ? bodyRowHeight : undefined;
-      const rowHeight = Math.max(dynamicHeight || 0, configuredHeight || 0);
+      const rowHeight = rowIndex === 0 ? 26 : Math.max(dynamicHeight || 0, configuredHeight || 0);
       const height = rowHeight ? ` ht="${rowHeight}" customHeight="1"` : "";
       return `<row r="${rowIndex + 1}"${height}>${cells}</row>`;
     }).join("");
-  const cols = hasDrawing ? `<cols><col min="1" max="1" width="10" customWidth="1"/><col min="2" max="2" width="70" customWidth="1"/><col min="3" max="3" width="36" customWidth="1"/></cols>` : "";
+  const cols = columnWidths(headers, actualRows, hasDrawing);
+  const lastColumn = columnName(Math.max(headers.length - 1, 0));
+  const autoFilter = actualRows.length ? `<autoFilter ref="A1:${lastColumn}${actualRows.length + 1}"/>` : "";
   const drawing = hasDrawing ? '<drawing r:id="rId1"/>' : "";
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
 ${cols}
 <sheetData>${xmlRows}</sheetData>
+${autoFilter}
 ${drawing}
 </worksheet>`;
+}
+
+function columnWidths(headers: string[], rows: Row[], hasDrawing: boolean): string {
+  const widths = headers.map((header, index) => {
+    if (hasDrawing && index === 0) return 10;
+    if (hasDrawing && index === 1) return 70;
+    if (hasDrawing && index === 2) return 36;
+    const preferred = preferredColumnWidth(header);
+    if (preferred) return preferred;
+    const longest = Math.max(header.length, ...rows.map((row) => String(row[header] ?? "").split("\n").reduce((max, line) => Math.max(max, line.length), 0)));
+    return Math.max(12, Math.min(60, Math.ceil(longest * 0.95 + 2)));
+  });
+  return `<cols>${widths.map((width, index) => `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`).join("")}</cols>`;
+}
+
+function preferredColumnWidth(header: string): number | undefined {
+  const widths: Record<string, number> = {
+    Module: 26,
+    Issue: 36,
+    Description: 95,
+    Priority: 14,
+    Status: 16,
+    Steps: 55,
+    Expected: 44,
+    Actual: 55,
+    Screenshot: 38,
+    "Developer Note": 55,
+    Metric: 26,
+    Value: 60,
+    Notes: 48,
+    step: 90,
+    error: 90,
+    note: 80,
+    path: 70,
+    image: 16
+  };
+  return widths[header];
 }
 
 interface CollectedImage {
@@ -445,13 +489,68 @@ ${rels}
 </Relationships>`;
 }
 
-function cellXml(value: CellValue, columnIndex: number, rowIndex: number): string {
+function cellXml(value: CellValue, columnIndex: number, rowIndex: number, header?: string): string {
   const ref = `${columnName(columnIndex)}${rowIndex + 1}`;
-  if (typeof value === "number") return `<c r="${ref}"><v>${value}</v></c>`;
-  if (typeof value === "boolean") return `<c r="${ref}" t="b"><v>${value ? 1 : 0}</v></c>`;
+  const style = cellStyle(value, rowIndex, header);
+  if (typeof value === "number") return `<c r="${ref}" s="${style}"><v>${value}</v></c>`;
+  if (typeof value === "boolean") return `<c r="${ref}" s="${style}" t="b"><v>${value ? 1 : 0}</v></c>`;
   const stringValue = String(value);
   const preserveSpace = /(^\s|\s$|\n)/.test(stringValue) ? ' xml:space="preserve"' : "";
-  return `<c r="${ref}" t="inlineStr"><is><t${preserveSpace}>${escapeXml(stringValue)}</t></is></c>`;
+  return `<c r="${ref}" s="${style}" t="inlineStr"><is><t${preserveSpace}>${escapeXml(stringValue)}</t></is></c>`;
+}
+
+function cellStyle(value: CellValue, rowIndex: number, header?: string): number {
+  if (rowIndex === 0) return 1;
+  if (header === "Priority") {
+    if (value === "Critical") return 3;
+    if (value === "High") return 4;
+    if (value === "Medium") return 5;
+    if (value === "Low") return 6;
+  }
+  if (header === "Status") {
+    if (value === "Pass" || value === "Fixed") return 7;
+    if (value === "Blocked") return 3;
+    if (value === "Open") return 4;
+    if (value === "Needs Verification") return 5;
+  }
+  return 2;
+}
+
+function stylesXml(): string {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<fonts count="3">
+<font><sz val="11"/><color rgb="FF111827"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FF111827"/><name val="Calibri"/></font>
+</fonts>
+<fills count="8">
+<fill><patternFill patternType="none"/></fill>
+<fill><patternFill patternType="gray125"/></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF6B2FA0"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF991B1B"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFEE2E2"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFEF3C7"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFD1FAE5"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFEFF6FF"/><bgColor indexed="64"/></patternFill></fill>
+</fills>
+<borders count="2">
+<border><left/><right/><top/><bottom/><diagonal/></border>
+<border><left style="thin"><color rgb="FFD1D5DB"/></left><right style="thin"><color rgb="FFD1D5DB"/></right><top style="thin"><color rgb="FFD1D5DB"/></top><bottom style="thin"><color rgb="FFD1D5DB"/></bottom><diagonal/></border>
+</borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="8">
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="2" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="2" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="2" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="2" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top" wrapText="1"/></xf>
+</cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
 }
 
 function columnName(index: number): string {
