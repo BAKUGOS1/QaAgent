@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">QA Agent workflow</title>
+  <desc id="desc">Diagram showing how QaAgent turns a user task into browser execution, evidence capture, QA analysis, and reports.</desc>
+  <defs>
+    <linearGradient id="header" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#143D59"/>
+      <stop offset="100%" stop-color="#1F7A8C"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L12,7 L2,12 Z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 34px Arial, sans-serif; fill: #ffffff; }
+      .subtitle { font: 400 16px Arial, sans-serif; fill: #dff7fb; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 16; filter: url(#shadow); }
+      .box-blue { fill: #e8f5ff; stroke: #76a9d6; }
+      .box-green { fill: #edfdf5; stroke: #73c69f; }
+      .box-amber { fill: #fff7e6; stroke: #e5b65e; }
+      .box-red { fill: #fff1f2; stroke: #f08b99; }
+      .box-purple { fill: #f4f0ff; stroke: #a994e8; }
+      .box-title { font: 700 19px Arial, sans-serif; fill: #0f172a; }
+      .box-text { font: 400 14px Arial, sans-serif; fill: #334155; }
+      .small { font: 400 12px Arial, sans-serif; fill: #475569; }
+      .lane-title { font: 700 15px Arial, sans-serif; fill: #0f172a; }
+      .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #64748b; stroke-width: 2; stroke-dasharray: 7 7; fill: none; marker-end: url(#arrow); }
+      .pill { fill: #0f172a; opacity: 0.08; rx: 12; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1280" height="760"/>
+
+  <rect x="0" y="0" width="1280" height="118" fill="url(#header)"/>
+  <text class="title" x="48" y="52">How QA Agent Works</text>
+  <text class="subtitle" x="50" y="84">One local Playwright browser engine, two reasoning modes, safe actions, evidence capture, and Excel-first QA reports.</text>
+
+  <text class="lane-title" x="64" y="154">Input</text>
+  <text class="lane-title" x="318" y="154">Reasoning Mode</text>
+  <text class="lane-title" x="580" y="154">Local Execution</text>
+  <text class="lane-title" x="874" y="154">QA Intelligence</text>
+  <text class="lane-title" x="1100" y="154">Output</text>
+
+  <rect class="box box-blue" x="46" y="178" width="218" height="154"/>
+  <text class="box-title" x="70" y="214">Task File or CLI</text>
+  <text class="box-text" x="70" y="246">websiteUrl, task, scope</text>
+  <text class="box-text" x="70" y="270">login config, modules</text>
+  <text class="box-text" x="70" y="294">safety permissions</text>
+  <rect class="pill" x="68" y="306" width="146" height="24"/>
+  <text class="small" x="82" y="323">No secrets in reports</text>
+
+  <rect class="box box-purple" x="322" y="178" width="218" height="154"/>
+  <text class="box-title" x="346" y="214">Mode Router</text>
+  <text class="box-text" x="346" y="246">Codex / no-API mode</text>
+  <text class="box-text" x="346" y="270">Groq API tool loop</text>
+  <text class="box-text" x="346" y="294">State-only inspection</text>
+  <rect class="pill" x="344" y="306" width="162" height="24"/>
+  <text class="small" x="358" y="323">Same browser engine</text>
+
+  <rect class="box box-green" x="598" y="166" width="248" height="94"/>
+  <text class="box-title" x="622" y="202">Smart Login</text>
+  <text class="box-text" x="622" y="230">Uses env-backed credentials and</text>
+  <text class="box-text" x="622" y="250">verifies URL/text success signals.</text>
+
+  <rect class="box box-red" x="598" y="286" width="248" height="94"/>
+  <text class="box-title" x="622" y="322">Safety Guard</text>
+  <text class="box-text" x="622" y="350">Blocks delete, payment, bulk</text>
+  <text class="box-text" x="622" y="370">updates, messages, and exports.</text>
+
+  <rect class="box box-blue" x="598" y="406" width="248" height="134"/>
+  <text class="box-title" x="622" y="442">Playwright Browser</text>
+  <text class="box-text" x="622" y="474">Opens pages, clicks, fills, waits,</text>
+  <text class="box-text" x="622" y="498">captures screenshots, traces,</text>
+  <text class="box-text" x="622" y="522">console logs, and network errors.</text>
+
+  <rect class="box box-amber" x="894" y="178" width="226" height="154"/>
+  <text class="box-title" x="918" y="214">State + Detectors</text>
+  <text class="box-text" x="918" y="246">Clickable indexes, forms, tables,</text>
+  <text class="box-text" x="918" y="270">toasts, validation messages,</text>
+  <text class="box-text" x="918" y="294">console/network failures.</text>
+
+  <rect class="box box-amber" x="894" y="376" width="226" height="154"/>
+  <text class="box-title" x="918" y="412">Coverage Truth</text>
+  <text class="box-text" x="918" y="444">Marks each scope/module as</text>
+  <text class="box-text" x="918" y="468">Pass, Partial, Blocked,</text>
+  <text class="box-text" x="918" y="492">Needs Verification, or Not Tested.</text>
+
+  <rect class="box box-green" x="1154" y="178" width="86" height="154"/>
+  <text class="box-title" x="1175" y="214">QA</text>
+  <text class="box-title" x="1168" y="238">Report</text>
+  <text class="small" x="1170" y="272">Excel</text>
+  <text class="small" x="1170" y="294">JSON</text>
+  <text class="small" x="1170" y="316">MD</text>
+
+  <rect class="box box-green" x="1154" y="376" width="86" height="154"/>
+  <text class="box-title" x="1170" y="412">Local</text>
+  <text class="box-title" x="1166" y="436">Artifacts</text>
+  <text class="small" x="1168" y="470">shots</text>
+  <text class="small" x="1168" y="492">state</text>
+  <text class="small" x="1168" y="514">trace</text>
+
+  <path class="arrow" d="M264 254 H322"/>
+  <path class="arrow" d="M540 254 C570 254 570 213 598 213"/>
+  <path class="arrow" d="M540 254 C570 254 570 333 598 333"/>
+  <path class="arrow" d="M722 260 V286"/>
+  <path class="arrow" d="M722 380 V406"/>
+  <path class="arrow" d="M846 473 C872 473 872 255 894 255"/>
+  <path class="arrow" d="M1007 332 V376"/>
+  <path class="arrow" d="M1120 255 H1154"/>
+  <path class="arrow" d="M1120 453 H1154"/>
+
+  <rect class="box" x="70" y="602" width="1140" height="92"/>
+  <text class="box-title" x="94" y="636">Default contract</text>
+  <text class="box-text" x="94" y="666">The agent does not claim a clean pass from one page snapshot. It records what was actually tested, what was blocked, and what still needs verification.</text>
+  <text class="box-text" x="94" y="690">Reports and artifacts stay local by default; secrets, cookies, screenshots, traces, and generated reports are not pushed.</text>
+
+  <path class="dash" d="M197 602 C197 558 430 558 430 332"/>
+  <path class="dash" d="M1010 530 C1010 578 640 578 640 602"/>
+</svg>

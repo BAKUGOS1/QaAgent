@@ -18,6 +18,19 @@ QA Agent is built around one shared browser engine and two operating modes:
 - Safety guardrails that block destructive actions such as deletes, payments, real message sends, bulk updates, billing changes, sensitive exports, and account setting changes by default.
 - Installable Codex and Claude Code plugin surfaces so this repo can expose the QA Agent skill on any machine.
 
+## How It Works
+
+![QA Agent workflow](docs/assets/qa-agent-workflow.svg)
+
+QA Agent takes a URL or task file, chooses a reasoning mode, runs a local Playwright browser, captures evidence, and generates a report that says what was tested and what still needs verification.
+
+- **Input**: CLI args or task JSON define the site, scope, modules, login settings, report format, and safety permissions.
+- **Reasoning mode**: Codex/no-API mode uses this repo as the local browser harness; Groq/API mode lets Groq choose safe tool calls.
+- **Smart login**: when `login.enabled` is true, the agent uses env-backed credentials, submits the login form, and verifies success without printing secrets.
+- **Local execution**: Playwright opens pages, performs safe actions, captures screenshots, trace files, browser state, console errors, and network errors.
+- **QA intelligence**: detectors and playbooks inspect forms, tables, navigation, validations, UX signals, and coverage truth.
+- **Output**: Excel-first report plus optional Markdown/JSON, screenshots, browser state, and traces under ignored local artifact folders.
+
 ## Quick Start
 
 ```bash
