@@ -1,6 +1,63 @@
-# QA Agent
+<p align="center">
+  <img src="docs/assets/qa-agent-workflow.svg" alt="QA Agent workflow" width="920">
+</p>
 
-TypeScript + Playwright QA automation framework for testing websites, CRM flows, forms, tables, auth journeys, console/network health, UX basics, and report generation.
+<h1 align="center">QA Agent</h1>
+
+<p align="center">
+  TypeScript + Playwright QA automation for websites, CRM flows, auth journeys, forms, tables, console/network health, coverage truth, and Excel-first reports.
+</p>
+
+<p align="center">
+  <img alt="Quality Gate" src="https://img.shields.io/badge/quality%20gate-passing-2ea44f">
+  <img alt="Node 20+" src="https://img.shields.io/badge/node-%3E%3D20-339933">
+  <img alt="Playwright" src="https://img.shields.io/badge/browser-Playwright-45ba4b">
+  <img alt="TypeScript" src="https://img.shields.io/badge/language-TypeScript-3178c6">
+  <img alt="Reports" src="https://img.shields.io/badge/reports-Excel%20%2B%20screenshots-f59e0b">
+</p>
+
+## Demo
+
+![QA Agent demo](docs/assets/qa-agent-demo.gif)
+
+## Why Star This Repo
+
+- **Local-first QA agent**: run browser QA without sending site credentials to a hosted automation service.
+- **Two modes**: Codex/no-API mode for chat-driven QA, Groq/API mode for standalone tool-loop runs.
+- **Real evidence**: screenshots, Playwright traces, browser state, console errors, network errors, and action steps.
+- **Coverage truth**: reports say what passed, what was partial, what was blocked, and what was not tested.
+- **Excel-first output**: product/dev-friendly bug report sheets with embedded screenshots.
+- **Safe by default**: delete, payment, bulk update, real message send, sensitive export, and settings changes are blocked unless explicitly allowed.
+
+## Report Preview
+
+![QA Agent sample report preview](docs/assets/sample-report-preview.png)
+
+See a readable sample report: [docs/SAMPLE_REPORT.md](docs/SAMPLE_REPORT.md)
+
+## 60-Second Install
+
+```bash
+git clone https://github.com/BAKUGOS1/QaAgent.git
+cd QaAgent
+npm install
+npx playwright install
+npm run quality:gate
+```
+
+Run a public smoke test:
+
+```bash
+npm run agent:codex -- --url "https://example.com" --task "Smoke test homepage and generate report" --headed
+```
+
+Run with a task file:
+
+```bash
+npm run agent:codex -- --task-file agent/tasks/example-task.json --headed
+```
+
+Generated reports stay local under `agent/reports/`; screenshots, traces, and browser state stay under `agent/artifacts/`.
 
 QA Agent is built around one shared browser engine and two operating modes:
 
@@ -18,7 +75,7 @@ QA Agent is built around one shared browser engine and two operating modes:
 - Safety guardrails that block destructive actions such as deletes, payments, real message sends, bulk updates, billing changes, sensitive exports, and account setting changes by default.
 - Installable Codex and Claude Code plugin surfaces so this repo can expose the QA Agent skill on any machine.
 
-## How It Works
+## Architecture
 
 ![QA Agent workflow](docs/assets/qa-agent-workflow.svg)
 
@@ -31,7 +88,7 @@ QA Agent takes a URL or task file, chooses a reasoning mode, runs a local Playwr
 - **QA intelligence**: detectors and playbooks inspect forms, tables, navigation, validations, UX signals, and coverage truth.
 - **Output**: Excel-first report plus optional Markdown/JSON, screenshots, browser state, and traces under ignored local artifact folders.
 
-## Quick Start
+## Developer Quick Start
 
 ```bash
 npm install
@@ -305,7 +362,7 @@ Related notes live in `agent/integrations/ecc/`.
 ## Roadmap
 
 - Deeper selector healing across every action path.
-- Playwright trace sessions per QA run.
+- Deeper module crawler for full-professional runs.
 - Visual regression checks.
 - Stronger auth/session profile support without storing secrets.
 - CI smoke tests.

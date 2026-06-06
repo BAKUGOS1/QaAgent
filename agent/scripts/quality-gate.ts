@@ -110,6 +110,12 @@ function isIgnored(file: string): boolean {
     file.includes("agent/reports") ||
     file.includes("agent/artifacts") ||
     file.endsWith(".png") ||
+    file.endsWith(".gif") ||
+    file.endsWith(".jpg") ||
+    file.endsWith(".jpeg") ||
+    file.endsWith(".webp") ||
+    file.endsWith(".mp4") ||
+    file.endsWith(".mov") ||
     file.endsWith(".xlsx") ||
     file.endsWith(".json") && file.includes("package-lock");
 }
