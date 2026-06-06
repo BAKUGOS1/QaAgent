@@ -26,7 +26,7 @@ npm run typecheck
 - `agent/src/api-agent/`: Groq/API tool loop.
 - `agent/src/codex-agent/`: Codex/no-API driver.
 - `agent/src/qa/`: QA engine, playbooks, detectors, priority rules.
-- `agent/src/reports/`: Markdown, JSON, Excel reports with screenshot embedding.
+- `agent/src/reports/`: Excel-first reports with optional Markdown/JSON and screenshot embedding.
 - `agent/memory/`: safe local memory for selectors, sites, playbooks, known issues, history.
 - `agent/artifacts/state/latest-browser-state.json`: rich browser state with indexed clickable elements.
 
@@ -46,7 +46,9 @@ Bug reports must be direct and complete:
 
 User-facing issue table: `Module`, `Issue`, `Description`, `Priority`, `Status`.
 
-Excel includes summary, bugs, test steps, screenshots, console/network errors, test data, browser state, QA checklist, and memory notes. Screenshots are embedded in the workbook when available.
+Excel is the default user-facing artifact. The first sheet must be `Bug Report` with the clean issue table only. The second sheet should be `Summary`. Technical evidence sheets can follow after that. Screenshots are embedded in the workbook when available.
+
+Repeated duplicate bugs should be aggregated into one clear row. Keep raw evidence in the technical sheets instead of making the user-facing bug table noisy.
 
 ## Safety Rules
 

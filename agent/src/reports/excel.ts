@@ -17,6 +17,31 @@ interface Sheet {
   images?: SheetImage[];
 }
 
+function userFacingIssues(context: RunContext): QaIssue[] {
+  const issues = [...context.bugs, ...context.uxIssues, ...context.missingValidations];
+  const grouped = new Map<string, QaIssue[]>();
+  for (const issue of issues) {
+    const key = `${issue.area}::${issue.title}::${issue.severity}`;
+    grouped.set(key, [...(grouped.get(key) || []), issue]);
+  }
+  return [...grouped.values()].map((items) => {
+    const first = items[0];
+    if (items.length === 1) return first;
+    const examples = items
+      .map((item) => item.description)
+      .filter(Boolean)
+      .slice(0, 3)
+      .join(" Example: ");
+    return {
+      ...first,
+      description: `Repeated ${items.length} times. ${examples}`,
+      evidence: items.map((item) => item.evidence || item.actual || "").filter(Boolean).slice(0, 3).join(" | "),
+      screenshot: first.screenshot || items.find((item) => item.screenshot)?.screenshot,
+      status: first.status || "Open"
+    };
+  });
+}
+
 function issueRows(issues: QaIssue[]): Row[] {
   return issues.map((issue) => ({
     Module: issue.area,
@@ -33,7 +58,7 @@ function issueRows(issues: QaIssue[]): Row[] {
 }
 
 function issueMatrixRows(context: RunContext): Row[] {
-  const rows = [...context.bugs, ...context.uxIssues, ...context.missingValidations].map((issue) => ({
+  const rows = userFacingIssues(context).map((issue) => ({
     Module: issue.area,
     Issue: conciseText(issue.title),
     Description: clearText(issue.description),
@@ -47,6 +72,47 @@ function issueMatrixRows(context: RunContext): Row[] {
     Priority: "Low",
     Status: "Pass"
   }];
+}
+
+function summaryRows(context: RunContext): Row[] {
+  const issues = userFacingIssues(context);
+  const byPriority = ["Critical", "High", "Medium", "Low"].map((priority) => ({
+    Priority: priority,
+    Count: issues.filter((issue) => issue.severity === priority).length,
+    Notes: priority === "Critical" ? "Blocks primary flow." : ""
+  }));
+  return [
+    {
+      Metric: "Website",
+      Value: context.task.websiteUrl,
+      Notes: ""
+    },
+    {
+      Metric: "Task",
+      Value: context.task.task,
+      Notes: ""
+    },
+    {
+      Metric: "Final Status",
+      Value: context.finalStatus,
+      Notes: ""
+    },
+    {
+      Metric: "Generated",
+      Value: context.startedAt,
+      Notes: ""
+    },
+    {
+      Metric: "Screenshots Embedded",
+      Value: context.screenshots.length,
+      Notes: context.screenshots.length ? "Screenshots are embedded in the Screenshots sheet." : "No screenshots captured."
+    },
+    ...byPriority.map((row) => ({
+      Metric: `${row.Priority} Issues`,
+      Value: row.Count,
+      Notes: row.Notes
+    }))
+  ];
 }
 
 function leadRows(leads: LeadData[]): Row[] {
@@ -96,8 +162,10 @@ function browserStateRows(context: RunContext): Row[] {
 
 export function writeExcelReport(context: RunContext, filePath: string): void {
   const sheets: Sheet[] = [
+    { name: "Bug Report", rows: issueMatrixRows(context) },
+    { name: "Summary", rows: summaryRows(context) },
     {
-      name: "Summary",
+      name: "Run Details",
       rows: [{
         websiteUrl: context.task.websiteUrl,
         task: context.task.task,

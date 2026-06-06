@@ -14,7 +14,7 @@ QA Agent is built around one shared browser engine and two operating modes:
 - Professional QA playbooks for smoke, functional, UI/UX, regression, accessibility, performance, security, CRUD, search/filter/sort, pagination, navigation, upload/download, and auth checks.
 - Safe local memory for selectors, sites, known issues, playbooks, and previous run summaries.
 - Indian-style CRM test lead generation with `@faker-js/faker`.
-- Markdown, JSON, and Excel reports, including embedded screenshots in Excel.
+- Excel-first reports, including embedded screenshots. Markdown/JSON are optional debug outputs.
 - Safety guardrails that block destructive actions such as deletes, payments, real message sends, bulk updates, billing changes, sensitive exports, and account setting changes by default.
 
 ## Quick Start
@@ -149,10 +149,10 @@ Never commit `.env`, `.env.local`, passwords, tokens, cookies, real customer dat
 Reports are generated locally:
 
 ```text
-agent/reports/YYYY-MM-DD-HH-mm-agent-report.md
-agent/reports/YYYY-MM-DD-HH-mm-agent-report.json
 agent/reports/YYYY-MM-DD-HH-mm-agent-report.xlsx
 ```
+
+Markdown and JSON are generated only when the task report config explicitly enables them.
 
 Artifacts are stored locally:
 
@@ -163,7 +163,7 @@ agent/artifacts/traces/
 agent/artifacts/state/latest-browser-state.json
 ```
 
-The Excel report includes sheets for summary, steps, generated lead data, bugs, UX issues, missing validations, console errors, network errors, screenshots, browser state, QA checklist, and memory notes when available.
+The Excel report starts with a clean `Bug Report` sheet using `Module`, `Issue`, `Description`, `Priority`, and `Status`. `Summary` comes next, followed by technical evidence sheets for steps, generated lead data, bugs, UX issues, missing validations, console errors, network errors, screenshots, browser state, QA checklist, and memory notes when available.
 
 Generated reports, screenshots, logs, traces, state files, browser profiles, and env files are ignored by Git.
 

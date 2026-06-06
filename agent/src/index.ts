@@ -29,9 +29,9 @@ async function main(): Promise<void> {
     : await runCodexDriver(options.task, options.headed);
 
   console.log("\nQA run complete.");
-  console.log(`Markdown report: ${result.reports.markdownPath}`);
-  console.log(`JSON report: ${result.reports.jsonPath}`);
-  console.log(`Excel report: ${result.reports.excelPath}`);
+  if (result.reports.markdownPath) console.log(`Markdown report: ${result.reports.markdownPath}`);
+  if (result.reports.jsonPath) console.log(`JSON report: ${result.reports.jsonPath}`);
+  if (result.reports.excelPath) console.log(`Excel report: ${result.reports.excelPath}`);
   console.log(`Final status: ${result.context.finalStatus}`);
   if (result.context.finalStatus === "Fail" && result.context.bugs[0]) {
     console.log(`Top issue: ${result.context.bugs[0].title} - ${result.context.bugs[0].description}`);

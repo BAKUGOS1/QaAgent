@@ -29,7 +29,11 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Keep `Description` clear and complete. Do not cut important details.
 - Avoid unnecessary long sentences.
 - Use this table shape for user-facing reports: `Module`, `Issue`, `Description`, `Priority`, `Status`.
-- Generate Markdown, JSON, and Excel only. Do not generate CSV.
+- Generate Excel only by default. Generate Markdown/JSON only when explicitly requested for debugging or automation.
+- Do not generate CSV.
+- Excel first sheet must be `Bug Report` with only user-facing bug rows.
+- Excel second sheet should be `Summary`; technical evidence sheets can follow after that.
+- Aggregate repeated duplicate bugs into one clear row. Do not repeat the same bug 10 times unless each row is materially different.
 - Excel reports must embed screenshots/images in the workbook when screenshots exist.
 - Do not push reports, screenshots, logs, traces, or `.env` files to GitHub.
 - Use browser state indexes when selector guessing is uncertain.

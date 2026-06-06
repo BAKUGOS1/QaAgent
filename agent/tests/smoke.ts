@@ -33,6 +33,9 @@ async function main(): Promise<void> {
   };
 
   const result = await runCodexDriver(task, false);
+  assert.ok(result.reports.markdownPath, "markdown path missing");
+  assert.ok(result.reports.jsonPath, "json path missing");
+  assert.ok(result.reports.excelPath, "excel path missing");
   assert.ok(fs.existsSync(result.reports.markdownPath), "markdown report missing");
   assert.ok(fs.existsSync(result.reports.jsonPath), "json report missing");
   assert.ok(fs.existsSync(result.reports.excelPath), "excel report missing");
@@ -41,7 +44,19 @@ async function main(): Promise<void> {
   assert.ok(result.context.browserState?.clickableElements.length !== undefined, "clickable index missing");
 
   const excelBytes = fs.readFileSync(result.reports.excelPath, "utf8");
+  assert.ok(excelBytes.includes("Bug Report"), "user-facing bug report sheet missing from excel");
   assert.ok(excelBytes.includes("xl/media/"), "embedded screenshot media missing from excel");
+
+  const excelOnlyTask: QaTask = {
+    ...task,
+    task: "Smoke test Excel-only report config.",
+    report: { excel: true, markdown: false, json: false, embedScreenshotsInExcel: true }
+  };
+  const excelOnlyResult = await runCodexDriver(excelOnlyTask, false);
+  assert.ok(excelOnlyResult.reports.excelPath, "excel-only path missing");
+  assert.ok(fs.existsSync(excelOnlyResult.reports.excelPath), "excel-only report missing");
+  assert.equal(excelOnlyResult.reports.markdownPath, undefined);
+  assert.equal(excelOnlyResult.reports.jsonPath, undefined);
 
   assert.throws(() => assertSafeAction("delete customer", defaultSafety()), /Blocked by safety guard/);
   assert.throws(() => assertSafeAction("payment checkout", defaultSafety()), /Blocked by safety guard/);
@@ -60,4 +75,3 @@ main().catch((error) => {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 });
-

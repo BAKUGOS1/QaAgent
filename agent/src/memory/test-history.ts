@@ -5,8 +5,8 @@ export interface TestHistoryEntry {
   mode: string;
   date: string;
   status: string;
-  reportMarkdown: string;
-  reportJson: string;
+  reportMarkdown?: string;
+  reportJson?: string;
   reportExcel?: string;
 }
 

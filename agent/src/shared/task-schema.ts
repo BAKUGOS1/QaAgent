@@ -37,13 +37,13 @@ const moduleSchema = z.object({
 
 const reportSchema = z.object({
   excel: z.boolean().default(true),
-  markdown: z.boolean().default(true),
-  json: z.boolean().default(true),
+  markdown: z.boolean().default(false),
+  json: z.boolean().default(false),
   embedScreenshotsInExcel: z.boolean().default(true)
 }).default({
   excel: true,
-  markdown: true,
-  json: true,
+  markdown: false,
+  json: false,
   embedScreenshotsInExcel: true
 });
 

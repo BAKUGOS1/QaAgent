@@ -28,6 +28,8 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
         "Never reveal or store passwords, tokens, cookies, or real customer data.",
         "Report bugs directly: concise title, complete error/bug description, clear priority, clear status.",
         "Avoid unnecessary long sentences, but do not cut important details.",
+        "User-facing reports are Excel-only by default unless the task explicitly asks for Markdown or JSON.",
+        "The first Excel sheet must be a clean bug report with Module, Issue, Description, Priority, Status.",
         "Do not generate CSV reports.",
         "Do not push reports, screenshots, logs, or local artifacts to GitHub.",
         "When enough evidence is collected, call generate_report."
