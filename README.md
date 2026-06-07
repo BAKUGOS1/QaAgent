@@ -1,11 +1,11 @@
+<h1 align="center">QaAgent</h1>
+
 <p align="center">
-  <img src="docs/assets/qa-agent-social-preview.png" alt="QA Agent social preview" width="960">
+  <strong>Local-first TypeScript + Playwright QA automation for real website testing.</strong>
 </p>
 
-<h1 align="center">QA Agent</h1>
-
 <p align="center">
-  TypeScript + Playwright QA automation for websites, CRM flows, auth journeys, forms, tables, console/network health, coverage truth, and Excel-first reports.
+  Test auth journeys, CRM flows, forms, tables, UI/UX, console/network health, safety risks, and coverage truth with Excel-first reports.
 </p>
 
 <p align="center">
@@ -16,24 +16,33 @@
   <img alt="Reports" src="https://img.shields.io/badge/reports-Excel%20%2B%20screenshots-f59e0b">
 </p>
 
+<p align="center">
+  <a href="#demo">Demo</a> |
+  <a href="#60-second-install">Install</a> |
+  <a href="#report-preview">Sample Report</a> |
+  <a href="#install-as-an-agent-plugin">Agent Plugin</a> |
+  <a href="docs/PLUGIN_INSTALL.md">Plugin Guide</a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/qa-agent-social-preview.png" alt="QaAgent social preview showing browser checks, issue detection, screenshots, and QA reports" width="900">
+</p>
+
+## What It Does
+
+QaAgent runs a local Playwright browser, captures evidence, detects website quality issues, and produces QA reports that developers and product teams can act on.
+
+- **Start from a URL or task file** and run smoke, functional, UI/UX, accessibility, performance, security, or full-professional checks.
+- **Use Codex/no-API mode** for chat-driven QA, or **Groq/API mode** for standalone tool-loop runs.
+- **Capture proof** with screenshots, traces, browser state, console errors, network errors, and action steps.
+- **Report honestly** with passed, partial, blocked, untested, and needs-verification coverage.
+- **Stay safe by default** by blocking deletes, payments, real message sends, bulk updates, sensitive exports, and settings changes.
+
 ## Demo
 
-![QA Agent animated showcase](docs/assets/qa-agent-showcase.gif)
-
-## Why Star This Repo
-
-- **Local-first QA agent**: run browser QA without sending site credentials to a hosted automation service.
-- **Two modes**: Codex/no-API mode for chat-driven QA, Groq/API mode for standalone tool-loop runs.
-- **Real evidence**: screenshots, Playwright traces, browser state, console errors, network errors, and action steps.
-- **Coverage truth**: reports say what passed, what was partial, what was blocked, and what was not tested.
-- **Excel-first output**: product/dev-friendly bug report sheets with embedded screenshots.
-- **Safe by default**: delete, payment, bulk update, real message send, sensitive export, and settings changes are blocked unless explicitly allowed.
-
-## Report Preview
-
-![QA Agent sample report preview](docs/assets/sample-report-preview.png)
-
-See a readable sample report: [docs/SAMPLE_REPORT.md](docs/SAMPLE_REPORT.md)
+<p align="center">
+  <img src="docs/assets/qa-agent-showcase.gif" alt="Animated QaAgent workflow from user task to browser testing, issue detection, and QA report" width="900">
+</p>
 
 ## 60-Second Install
 
@@ -59,7 +68,23 @@ npm run agent:codex -- --task-file agent/tasks/example-task.json --headed
 
 Generated reports stay local under `agent/reports/`; screenshots, traces, and browser state stay under `agent/artifacts/`.
 
-QA Agent is built around one shared browser engine and two operating modes:
+## Report Preview
+
+<p align="center">
+  <img src="docs/assets/sample-report-preview.png" alt="QaAgent sample Excel-style QA report preview" width="900">
+</p>
+
+See a readable sample report: [docs/SAMPLE_REPORT.md](docs/SAMPLE_REPORT.md)
+
+## Why Star It
+
+- **Local-first QA agent**: run browser QA without sending site credentials to a hosted automation service.
+- **Evidence-rich output**: screenshots, Playwright traces, browser state, console errors, network errors, and action steps.
+- **Excel-first reports**: product/dev-friendly bug report sheets with embedded screenshots.
+- **Professional playbooks**: auth, forms, CRUD, tables, navigation, UI/UX, accessibility, performance, security, and regression basics.
+- **Installable agent surface**: Codex and Claude Code plugin manifests are included.
+
+QaAgent is built around one shared browser engine and two operating modes:
 
 - **Codex / no-API mode**: Codex does the reasoning in chat while this repo provides browser automation, state capture, screenshots, memory, generated data, and reports.
 - **Groq API mode**: Groq acts as the standalone model brain and chooses safe Playwright tool calls from the CLI.
@@ -73,13 +98,15 @@ QA Agent is built around one shared browser engine and two operating modes:
 - Indian-style CRM test lead generation with `@faker-js/faker`.
 - Excel-first reports, including embedded screenshots. Markdown/JSON are optional debug outputs.
 - Safety guardrails that block destructive actions such as deletes, payments, real message sends, bulk updates, billing changes, sensitive exports, and account setting changes by default.
-- Installable Codex and Claude Code plugin surfaces so this repo can expose the QA Agent skill on any machine.
+- Installable Codex and Claude Code plugin surfaces so this repo can expose the QaAgent skill on any machine.
 
 ## Architecture
 
-![QA Agent workflow](docs/assets/qa-agent-workflow.svg)
+<p align="center">
+  <img src="docs/assets/qa-agent-workflow.svg" alt="QaAgent architecture workflow" width="900">
+</p>
 
-QA Agent takes a URL or task file, chooses a reasoning mode, runs a local Playwright browser, captures evidence, and generates a report that says what was tested and what still needs verification.
+QaAgent takes a URL or task file, chooses a reasoning mode, runs a local Playwright browser, captures evidence, and generates a report that says what was tested and what still needs verification.
 
 - **Input**: CLI args or task JSON define the site, scope, modules, login settings, report format, and safety permissions.
 - **Reasoning mode**: Codex/no-API mode uses this repo as the local browser harness; Groq/API mode lets Groq choose safe tool calls.
@@ -341,7 +368,7 @@ agent/reports/           Local generated reports
 
 ## Browser-Use Inspiration
 
-This project uses `browser-use` as architecture inspiration only. Browser-use is Python-based; QA Agent remains TypeScript + Playwright. Inspired concepts include browser state extraction, clickable element indexes, custom tools, persistent sessions, screenshots, and task-based actions.
+This project uses `browser-use` as architecture inspiration only. Browser-use is Python-based; QaAgent remains TypeScript + Playwright. Inspired concepts include browser state extraction, clickable element indexes, custom tools, persistent sessions, screenshots, and task-based actions.
 
 Related notes live in `agent/integrations/browser-use/`.
 
@@ -370,4 +397,4 @@ Related notes live in `agent/integrations/ecc/`.
 
 ## License
 
-No license has been specified yet. Add one before redistributing or accepting external contributions.
+This repository does not include a license file yet. Add the intended license before redistribution or accepting external contributions.
