@@ -9,7 +9,9 @@
 </p>
 
 <p align="center">
-  <img alt="Quality Gate" src="https://img.shields.io/badge/quality%20gate-passing-2ea44f">
+  <a href="https://github.com/BAKUGOS1/QaAgent/actions/workflows/quality.yml">
+    <img alt="Quality Gate" src="https://github.com/BAKUGOS1/QaAgent/actions/workflows/quality.yml/badge.svg">
+  </a>
   <img alt="Node 20+" src="https://img.shields.io/badge/node-%3E%3D20-339933">
   <img alt="Playwright" src="https://img.shields.io/badge/browser-Playwright-45ba4b">
   <img alt="TypeScript" src="https://img.shields.io/badge/language-TypeScript-3178c6">
@@ -21,7 +23,8 @@
   <a href="#60-second-install">Install</a> |
   <a href="#report-preview">Sample Report</a> |
   <a href="#install-as-an-agent-plugin">Agent Plugin</a> |
-  <a href="docs/PLUGIN_INSTALL.md">Plugin Guide</a>
+  <a href="docs/PLUGIN_INSTALL.md">Plugin Guide</a> |
+  <a href="docs/LAUNCH_KIT.md">Launch Kit</a>
 </p>
 
 <p align="center">
@@ -83,6 +86,8 @@ See a readable sample report: [docs/SAMPLE_REPORT.md](docs/SAMPLE_REPORT.md)
 - **Excel-first reports**: product/dev-friendly bug report sheets with embedded screenshots.
 - **Professional playbooks**: auth, forms, CRUD, tables, navigation, UI/UX, accessibility, performance, security, and regression basics.
 - **Installable agent surface**: Codex and Claude Code plugin manifests are included.
+
+Sharing the repo? Use the ready-to-post copy and social preview notes in [docs/LAUNCH_KIT.md](docs/LAUNCH_KIT.md).
 
 QaAgent is built around one shared browser engine and two operating modes:
 
