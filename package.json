@@ -2,6 +2,7 @@
   "name": "qa-agent",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "TypeScript + Playwright QA agent for safe website testing, browser-state capture, and Markdown/JSON/Excel reports.",
   "type": "module",
   "keywords": [

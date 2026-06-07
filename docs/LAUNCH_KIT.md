@@ -25,7 +25,7 @@ ai-agent, ai-testing, automated-testing, browser-automation, browser-testing, co
 Use this image for the GitHub repository social preview:
 
 ```text
-docs/assets/qa-agent-social-preview.png
+docs/assets/qa-agent-social-preview.jpg
 ```
 
 Suggested GitHub path:

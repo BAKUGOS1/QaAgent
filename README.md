@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/qa-agent-social-preview.png" alt="QaAgent social preview showing browser checks, issue detection, screenshots, and QA reports" width="900">
+  <img src="docs/assets/qa-agent-social-preview.jpg" alt="QaAgent social preview showing browser checks, issue detection, screenshots, and QA reports" width="900">
 </p>
 
 ## What It Does
@@ -402,4 +402,4 @@ Related notes live in `agent/integrations/ecc/`.
 
 ## License
 
-This repository does not include a license file yet. Add the intended license before redistribution or accepting external contributions.
+MIT. See [LICENSE](LICENSE).
