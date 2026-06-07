@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/qa-agent-workflow.svg" alt="QA Agent workflow" width="920">
+  <img src="docs/assets/qa-agent-social-preview.png" alt="QA Agent social preview" width="960">
 </p>
 
 <h1 align="center">QA Agent</h1>
@@ -18,7 +18,7 @@
 
 ## Demo
 
-![QA Agent demo](docs/assets/qa-agent-demo.svg)
+![QA Agent animated showcase](docs/assets/qa-agent-showcase.gif)
 
 ## Why Star This Repo
 
