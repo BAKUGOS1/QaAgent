@@ -18,14 +18,15 @@ export function runQaEngine(
   state: BrowserState,
   consoleErrors: string[],
   networkErrors: string[],
-  scope: string[] = []
+  scope: string[] = [],
+  precomputedChecklist?: Record<string, string>
 ): QaEngineResult {
   const detected = detectIssues(state, consoleErrors, networkErrors);
   const riskTier = riskForScope(scope);
   return {
     ...detected,
     checklist: {
-      ...buildQaChecklist(profile, state),
+      ...buildQaChecklist(profile, state, precomputedChecklist),
       "Risk tier assigned": riskTier,
       "Flaky mitigation rule loaded": flakyRules[0].mitigation
     },

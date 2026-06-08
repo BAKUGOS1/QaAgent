@@ -52,7 +52,7 @@ function issueRows(issues: QaIssue[]): Row[] {
     Steps: clearText(issue.steps || ""),
     Expected: clearText(issue.expected || ""),
     Actual: clearText(issue.actual || issue.evidence || ""),
-    Screenshot: issue.screenshot || "",
+    Screenshot: issue.screenshot ? `=HYPERLINK("file:///${issue.screenshot.replace(/\\/g, "/")}", "View Screenshot")` : "",
     "Developer Note": clearText(issue.developerNote || issue.suggestedFix || "")
   }));
 }
@@ -265,7 +265,7 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
       rows: context.screenshots.length
         ? context.screenshots.map((screenshotPath, index) => ({
           index: index + 1,
-          path: screenshotPath,
+          path: `=HYPERLINK("file:///${screenshotPath.replace(/\\/g, "/")}", "View Screenshot")`,
           image: "embedded"
         }))
         : [{ index: 1, path: "No screenshots captured.", image: "" }],
@@ -556,6 +556,9 @@ function cellXml(value: CellValue, columnIndex: number, rowIndex: number, header
   if (typeof value === "number") return `<c r="${ref}" s="${style}"><v>${value}</v></c>`;
   if (typeof value === "boolean") return `<c r="${ref}" s="${style}" t="b"><v>${value ? 1 : 0}</v></c>`;
   const stringValue = String(value);
+  if (stringValue.startsWith("=")) {
+    return `<c r="${ref}" s="${style}"><f>${escapeXml(stringValue.slice(1))}</f></c>`;
+  }
   const preserveSpace = /(^\s|\s$|\n)/.test(stringValue) ? ' xml:space="preserve"' : "";
   return `<c r="${ref}" s="${style}" t="inlineStr"><is><t${preserveSpace}>${escapeXml(stringValue)}</t></is></c>`;
 }
@@ -568,9 +571,9 @@ function cellStyle(value: CellValue, rowIndex: number, header?: string): number 
     if (value === "Medium") return 5;
     if (value === "Low") return 6;
   }
-  if (header === "Status") {
+  if (header === "Status" || header === "Value") {
     if (value === "Pass" || value === "Fixed") return 7;
-    if (value === "Blocked") return 3;
+    if (value === "Fail" || value === "Blocked") return 3;
     if (value === "Open") return 4;
     if (value === "Needs Verification" || value === "Partial" || value === "Not Tested") return 5;
   }

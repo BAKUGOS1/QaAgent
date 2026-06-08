@@ -4,6 +4,8 @@ import { runConfiguredLogin } from "../browser/login-runner.js";
 import { createRandomLeads } from "../data/lead-data.js";
 import { buildCoverageSummary, statusWithCoverage } from "../qa/coverage.js";
 import { runQaEngine } from "../qa/qa-engine.js";
+import { runPlaybookChecks } from "../qa/playbook-runner.js";
+import { detectVisualRegression } from "../qa/detectors/visual-detector.js";
 import type { LeadData, QaTask, RunContext } from "../shared/types.js";
 import { assertSafeAction } from "../shared/safety-guard.js";
 import { sitesMemory } from "../memory/sites-memory.js";
@@ -105,7 +107,14 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
     }
 
     const state = await browser.saveBrowserState(screenshots.at(-1));
-    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors(), task.scope);
+    const precomputed = await runPlaybookChecks(task.qaProfile, browser, state);
+    const detected = runQaEngine(task.qaProfile, state, browser.getConsoleErrors(), browser.getNetworkErrors(), task.scope, precomputed);
+
+    const latestScreenshot = screenshots.at(-1);
+    if (latestScreenshot) {
+      const visualRegressions = await detectVisualRegression(latestScreenshot, state.url, "final");
+      detected.uxIssues.push(...visualRegressions);
+    }
     const tracePath = await browser.saveTrace();
     const stepsPerformed = [...browser.recorder.all(), "Groq tool loop completed."];
     const coverage = buildCoverageSummary({
