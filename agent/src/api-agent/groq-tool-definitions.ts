@@ -98,6 +98,51 @@ export const groqTools = [
   {
     type: "function",
     function: {
+      name: "wait_for_navigation",
+      description: "Wait for the page URL to change after a navigation-triggering action.",
+      parameters: { type: "object", properties: {} }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "scroll",
+      description: "Scroll the page up or down to reveal lazy-loaded or below-fold content.",
+      parameters: {
+        type: "object",
+        properties: {
+          direction: { type: "string", enum: ["down", "up"], description: "Scroll direction. Default: down." },
+          amount: { type: "number", description: "Pixels to scroll. Default: 600." }
+        }
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "select_option",
+      description: "Select an option from a <select> dropdown by value or visible label.",
+      parameters: {
+        type: "object",
+        properties: {
+          selector: { type: "string", description: "CSS selector for the <select> element." },
+          value: { type: "string", description: "Option value or visible label to select." }
+        },
+        required: ["selector", "value"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "hover",
+      description: "Hover over an element to reveal tooltips, dropdowns, or hover states.",
+      parameters: { type: "object", properties: { selector: { type: "string" } }, required: ["selector"] }
+    }
+  },
+  {
+    type: "function",
+    function: {
       name: "take_screenshot",
       description: "Take a screenshot.",
       parameters: { type: "object", properties: { label: { type: "string" } } }
@@ -132,6 +177,14 @@ export const groqTools = [
     function: {
       name: "get_network_errors",
       description: "Return captured network errors.",
+      parameters: { type: "object", properties: {} }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_api_responses",
+      description: "Return captured API response bodies to compare toasts with actual server responses.",
       parameters: { type: "object", properties: {} }
     }
   },

@@ -1,11 +1,11 @@
-<h1 align="center">QaAgent</h1>
+<h1 align="center">⚡ QaAgent</h1>
 
 <p align="center">
-  <strong>Local-first TypeScript + Playwright QA automation for real website testing.</strong>
+  <strong>Autonomous, Local-first TypeScript + Playwright QA Automation Engine for Enterprise Web Applications.</strong>
 </p>
 
 <p align="center">
-  Test auth journeys, CRM flows, forms, tables, UI/UX, console/network health, safety risks, and coverage truth with Excel-first reports.
+  Test authentication paths, multi-page flows, dynamic forms, complex data tables, accessibility issues, performance metrics, and safety rules with robust, evidence-rich, auto-generated Excel reports.
 </p>
 
 <p align="center">
@@ -18,37 +18,24 @@
   <img alt="Reports" src="https://img.shields.io/badge/reports-Excel%20%2B%20screenshots-f59e0b">
 </p>
 
-<p align="center">
-  <a href="#demo">Demo</a> |
-  <a href="#60-second-install">Install</a> |
-  <a href="#report-preview">Sample Report</a> |
-  <a href="#install-as-an-agent-plugin">Agent Plugin</a> |
-  <a href="docs/PLUGIN_INSTALL.md">Plugin Guide</a> |
-  <a href="docs/LAUNCH_KIT.md">Launch Kit</a>
-</p>
+---
 
-<p align="center">
-  <img src="docs/assets/qa-agent-social-preview.jpg" alt="QaAgent social preview showing browser checks, issue detection, screenshots, and QA reports" width="900">
-</p>
+## 🌟 What It Does
 
-## What It Does
+QaAgent runs a local, highly-instrumented Playwright browser, captures trace evidence, detects deep quality/usability defects, and produces professional, self-contained Excel workbooks.
 
-QaAgent runs a local Playwright browser, captures evidence, detects website quality issues, and produces QA reports that developers and product teams can act on.
+* **Autonomous Crawling & Testing**: In Codex/no-API mode, the agent automatically discovers links, sidebar items, tabs, and modals within the same origin, tests form validation, and takes full-page screenshots at every step.
+* **Dual Execution Modes**: Choose **Codex/no-API mode** (ideal for local-first execution with local credentials) or **Groq API mode** (autonomous agent CLI loop utilizing model-driven tool calls).
+* **Multi-Strategy Selector Healing**: Automatically attempts to recover from failing CSS selectors using selectors history memory, text hints, ARIA roles, or indexed state coordinates before raising a failure.
+* **Two-Tier Safety Guard**: A proactive firewall blocking destructive actions (deletes, settings alterations, payments, bulk updates, and message broadcast sends) by default. Safe tools bypass checks to eliminate false positives.
+* **Fleshed-out QA Detectors**: Automated DOM audits checking for accessibility faults, invalid forms, pagination/horizontal scrolling failures in tables, and console/network bottlenecks.
+* **Misleading UI Detection**: An API response interceptor capturing HTTP payloads to confirm if a user-facing success toast matches the actual server API response.
 
-- **Start from a URL or task file** and run smoke, functional, UI/UX, accessibility, performance, security, or full-professional checks.
-- **Use Codex/no-API mode** for chat-driven QA, or **Groq/API mode** for standalone tool-loop runs.
-- **Capture proof** with screenshots, traces, browser state, console errors, network errors, and action steps.
-- **Report honestly** with passed, partial, blocked, untested, and needs-verification coverage.
-- **Stay safe by default** by blocking deletes, payments, real message sends, bulk updates, sensitive exports, and settings changes.
+---
 
-## Demo
+## 📦 60-Second Install
 
-<p align="center">
-  <img src="docs/assets/qa-agent-showcase.gif" alt="Animated QaAgent workflow from user task to browser testing, issue detection, and QA report" width="900">
-</p>
-
-## 60-Second Install
-
+Clone the repository and build:
 ```bash
 git clone https://github.com/BAKUGOS1/QaAgent.git
 cd QaAgent
@@ -57,172 +44,52 @@ npx playwright install
 npm run quality:gate
 ```
 
-Run a public smoke test:
-
+Run a public homepage exploration:
 ```bash
-npm run agent:codex -- --url "https://example.com" --task "Smoke test homepage and generate report" --headed
+npm run agent:codex -- --url "https://example.com" --task "Explore homepage and generate QA report" --headed
 ```
 
 Run with a task file:
-
 ```bash
 npm run agent:codex -- --task-file agent/tasks/example-task.json --headed
 ```
 
-Generated reports stay local under `agent/reports/`; screenshots, traces, and browser state stay under `agent/artifacts/`.
+---
 
-## Report Preview
+## 🏛️ Architecture & System Design
 
-<p align="center">
-  <img src="docs/assets/sample-report-preview.png" alt="QaAgent sample Excel-style QA report preview" width="900">
-</p>
-
-See a readable sample report: [docs/SAMPLE_REPORT.md](docs/SAMPLE_REPORT.md)
-
-## Why Star It
-
-- **Local-first QA agent**: run browser QA without sending site credentials to a hosted automation service.
-- **Evidence-rich output**: screenshots, Playwright traces, browser state, console errors, network errors, and action steps.
-- **Excel-first reports**: product/dev-friendly bug report sheets with embedded screenshots.
-- **Professional playbooks**: auth, forms, CRUD, tables, navigation, UI/UX, accessibility, performance, security, and regression basics.
-- **Installable agent surface**: Codex and Claude Code plugin manifests are included.
-
-Sharing the repo? Use the ready-to-post copy and social preview notes in [docs/LAUNCH_KIT.md](docs/LAUNCH_KIT.md).
-
-QaAgent is built around one shared browser engine and two operating modes:
-
-- **Codex / no-API mode**: Codex does the reasoning in chat while this repo provides browser automation, state capture, screenshots, memory, generated data, and reports.
-- **Groq API mode**: Groq acts as the standalone model brain and chooses safe Playwright tool calls from the CLI.
-
-## Highlights
-
-- Playwright browser automation with headed and headless runs.
-- Browser state extraction with clickable element indexes, forms, links, buttons, tables, modals, toasts, console errors, and network errors.
-- Professional QA playbooks for smoke, functional, UI/UX, regression, accessibility, performance, security, CRUD, search/filter/sort, pagination, navigation, upload/download, and auth checks.
-- Safe local memory for selectors, sites, known issues, playbooks, and previous run summaries.
-- Indian-style CRM test lead generation with `@faker-js/faker`.
-- Excel-first reports, including embedded screenshots. Markdown/JSON are optional debug outputs.
-- Safety guardrails that block destructive actions such as deletes, payments, real message sends, bulk updates, billing changes, sensitive exports, and account setting changes by default.
-- Installable Codex and Claude Code plugin surfaces so this repo can expose the QaAgent skill on any machine.
-
-## Architecture
-
-<p align="center">
-  <img src="docs/assets/qa-agent-workflow.svg" alt="QaAgent architecture workflow" width="900">
-</p>
-
-QaAgent takes a URL or task file, chooses a reasoning mode, runs a local Playwright browser, captures evidence, and generates a report that says what was tested and what still needs verification.
-
-- **Input**: CLI args or task JSON define the site, scope, modules, login settings, report format, and safety permissions.
-- **Reasoning mode**: Codex/no-API mode uses this repo as the local browser harness; Groq/API mode lets Groq choose safe tool calls.
-- **Smart login**: when `login.enabled` is true, the agent uses env-backed credentials, submits the login form, and verifies success without printing secrets.
-- **Local execution**: Playwright opens pages, performs safe actions, captures screenshots, trace files, browser state, console errors, and network errors.
-- **QA intelligence**: detectors and playbooks inspect forms, tables, navigation, validations, UX signals, and coverage truth.
-- **Output**: Excel-first report plus optional Markdown/JSON, screenshots, browser state, and traces under ignored local artifact folders.
-
-## Developer Quick Start
-
-```bash
-npm install
-npx playwright install
-npm run typecheck
-npm run test:smoke
-npm run quality:gate
+```mermaid
+flowchart LR
+    URL[Website URL] ──► Agent[BrowserAgent]
+    Agent ──► Explorer[Autonomous Crawler]
+    Explorer ──► Interceptor[Network/API Interceptor]
+    Explorer ──► Healer[Selector Healer]
+    Agent ──► Detectors[QA Audit Detectors]
+    Detectors ──► Excel[Zero-Dep Excel Writer]
 ```
 
-The smoke test verifies Codex/no-API mode, browser state capture, screenshot/trace capture, coverage reporting, report writing, Excel media embedding, missing Groq key handling, safety guards, and generated test data.
+Read the full system architecture specifications in [ARCHITECTURE.md](ARCHITECTURE.md).
 
-## Install As An Agent Plugin
+---
 
-This repo includes a local marketplace, a Codex plugin manifest, and a Claude Code plugin manifest:
+## 🎮 CLI Command Directory
 
-```text
-.agents/plugins/marketplace.json
-plugins/qa-agent/.codex-plugin/plugin.json
-plugins/qa-agent/.claude-plugin/plugin.json
-plugins/qa-agent/commands/qa-agent.md
-plugins/qa-agent/skills/qa-agent/SKILL.md
-```
+| Command | Action |
+|---|---|
+| `npm run agent:codex` | Execute Codex/no-API mode with autonomous crawling. |
+| `npm run agent:api` | Execute Groq API tool loop mode. |
+| `npm run agent:state` | Output the current page's accessible JSON state to disk. |
+| `npm run test:smoke` | Run local framework integration tests. |
+| `npm run typecheck` | Run type checking to verify codebase compile status. |
+| `npm run quality:gate` | Execute full gate audit (Typecheck + Smoke + Security Scan + Report Sanity). |
 
-From a fresh clone:
+---
 
-```bash
-git clone https://github.com/BAKUGOS1/QaAgent.git
-cd QaAgent
-npm install
-npx playwright install
-codex plugin marketplace add .
-codex plugin add qa-agent@qa-agent-marketplace
-```
+## 🔧 Configuring Groq API Mode
 
-Open a new Codex thread after installing so the `qa-agent` skill is available.
-
-If you are not inside the repo, use the absolute path:
-
-```bash
-codex plugin marketplace add "C:\path\to\QaAgent"
-codex plugin add qa-agent@qa-agent-marketplace
-```
-
-For Claude Code, add the same repo marketplace and install the plugin from Claude's plugin command UI:
-
-```text
-/plugin marketplace add https://github.com/BAKUGOS1/QaAgent
-/plugin install qa-agent@qa-agent-marketplace
-```
-
-More details: [`docs/PLUGIN_INSTALL.md`](docs/PLUGIN_INSTALL.md)
-
-## Requirements
-
-- Node.js 20 or newer
-- npm
-- Playwright browser binaries installed with `npx playwright install`
-- Optional: a Groq API key for standalone API mode
-
-## Commands
-
-```bash
-npm run agent:codex -- --url "https://example.com" --task "Smoke test homepage" --headed
-npm run agent:codex -- --task-file agent/tasks/example-task.json --headed
-npm run agent:state -- --url "https://example.com" --headed
-npm run agent:api -- --url "https://example.com" --task "Full professional QA" --headed
-npm run test:smoke
-npm run typecheck
-npm run quality:gate
-```
-
-Useful scripts:
-
-| Script | Purpose |
-| --- | --- |
-| `npm run agent` | Run the default CLI entrypoint. |
-| `npm run agent:codex` | Run Codex/no-API mode. |
-| `npm run agent:api` | Run Groq/API mode. |
-| `npm run agent:state` | Capture latest browser state without a full report. |
-| `npm run test:smoke` | Run the smoke verification script. |
-| `npm run typecheck` | Run TypeScript checks. |
-| `npm run quality:gate` | Run typecheck, smoke, audit, secret scan, and report sanity. |
-
-## Codex / No-API Mode
-
-Codex mode is the local-first workflow. Codex reasons in the chat session, and this repo supplies the browser engine, task schema, screenshots, state snapshots, memory files, report writer, QA detectors, and playbooks.
-
-```bash
-npm run agent:codex -- --url "https://example.com" --task "test login flow" --headed
-npm run agent:codex -- --task-file agent/tasks/zoyo-lead-test.json --headed
-```
-
-Codex mode does not require OpenAI, Groq, Anthropic, Letta, Mastra, LangGraph, Mem0, Zep, Graphiti, or any other external agent framework inside the repository.
-
-## Groq API Mode
-
-Groq mode is the standalone CLI mode. The Groq model chooses safe tool calls, and Playwright executes browser work locally.
-
-Create `.env.local` or `.env`:
-
-```bash
-GROQ_API_KEY=your_key_here
+Create a `.env.local` or `.env` file in the project root:
+```env
+GROQ_API_KEY=your_groq_api_key_here
 GROQ_MODEL=openai/gpt-oss-120b
 GROQ_FALLBACK_MODEL=openai/gpt-oss-20b
 TEST_EMAIL=
@@ -231,175 +98,58 @@ HEADLESS=false
 USE_PERSISTENT_PROFILE=false
 ```
 
-Run:
-
+Execute a fully autonomous run:
 ```bash
-npm run agent:api -- --url "https://example.com" --task "test full CRM lead creation flow" --count 10 --headed
-npm run agent:api -- --task-file agent/tasks/zoyo-lead-test.json --max-steps 75 --headed
+npm run agent:api -- --url "https://example.com" --task "Submit the contact form and verify success" --headed
 ```
 
-## Task Files
+---
 
-Task files live in `agent/tasks/`. They support:
+## 🛡️ Safety Enforcement Model
 
-- `websiteUrl`
-- `task`
-- `qaProfile`
-- `credentials`
-- `testDataCount`
-- `scope`
-- `login`
-- `modules`
-- `report`
-- `safety`
-- optional explicit `steps`
+The agent blocks destructive actions by default using a safe-tool whitelist and intent filtering:
+* **Allowed**: Navigation, screenshots, local state capture, lead generation, form submission, pagination, and searching.
+* **Blocked**: Deletes, archives, payment checkout, user invites, settings modifications, bulk updates, and real message sends.
 
-Example:
-
+To override, set safety permissions in your JSON task file:
 ```json
 {
-  "websiteUrl": "https://example.com",
-  "task": "Full professional QA",
-  "qaProfile": "full-professional",
-  "testDataCount": 10,
-  "scope": ["forms", "crud", "search", "pagination"],
   "safety": {
-    "allowDelete": false,
-    "allowArchive": false,
-    "allowPayment": false,
-    "allowRealMessageSend": false,
-    "allowBulkUpdate": false,
-    "allowSettingsChange": false,
-    "allowSensitiveExport": false
+    "allowDelete": true,
+    "allowRealMessageSend": false
   }
 }
 ```
 
-Credentials can be referenced through environment variable names:
+---
 
-```json
-{
-  "credentials": {
-    "emailEnv": "TEST_EMAIL",
-    "passwordEnv": "TEST_PASSWORD"
-  }
-}
+## 🗃️ Output Reports & Artifacts
+
+All outputs remain local and are excluded from version control:
+* **Reports**: Excel workbooks (`agent/reports/*.xlsx`) include a clean user-facing `Bug Report` sheet with embedded screenshots, a `Summary` dashboard, and detailed technical evidence sheets.
+* **Logs & Traces**: Playwright traces (`agent/artifacts/traces/`) and raw browser console/network logs.
+* **State Snapshot**: Current accessible state tree is cached under `agent/artifacts/state/latest-browser-state.json`.
+
+---
+
+## 🔌 Installing as an Agent Plugin
+
+Expose the `qa-agent` skill to your Codex or Claude Code terminal agent:
+
+For **Codex**:
+```bash
+codex plugin marketplace add .
+codex plugin add qa-agent@qa-agent-marketplace
 ```
 
-Never commit `.env`, `.env.local`, passwords, tokens, cookies, real customer data, payment data, or sensitive exports.
-
-## Reports And Artifacts
-
-Reports are generated locally:
-
+For **Claude Code**:
 ```text
-agent/reports/YYYY-MM-DD-HH-mm-agent-report.xlsx
+/plugin marketplace add https://github.com/BAKUGOS1/QaAgent
+/plugin install qa-agent@qa-agent-marketplace
 ```
 
-Markdown and JSON are generated only when the task report config explicitly enables them.
+---
 
-Artifacts are stored locally:
+## 📄 License
 
-```text
-agent/artifacts/screenshots/
-agent/artifacts/logs/
-agent/artifacts/traces/
-agent/artifacts/state/latest-browser-state.json
-```
-
-The Excel report starts with a clean `Bug Report` sheet using `Module`, `Issue`, `Description`, `Priority`, and `Status`. `Summary` comes next, followed by technical evidence sheets for steps, generated lead data, bugs, UX issues, missing validations, console errors, network errors, screenshots, browser state, QA checklist, and memory notes when available.
-
-Generated reports, screenshots, logs, traces, state files, browser profiles, and env files are ignored by Git.
-
-## QA Profiles
-
-Supported profiles:
-
-- `smoke`
-- `functional`
-- `ui-ux`
-- `regression-basic`
-- `accessibility-basic`
-- `performance-basic`
-- `security-basic`
-- `full-professional`
-
-Professional playbooks include auth, forms, CRUD, search/filter/sort, tables/pagination, upload/download, navigation, responsive, accessibility basic, performance basic, security basic, and error states.
-
-## Safety Model
-
-Blocked by default:
-
-- Delete
-- Archive
-- Payment
-- Real email, SMS, or WhatsApp sends
-- Bulk update
-- Password changes
-- Billing or subscription changes
-- User invites
-- Sensitive exports
-- Account settings changes
-- Real customer destructive edits
-
-Allowed by default:
-
-- Safe navigation
-- Screenshots
-- Logs
-- Browser state capture
-- Test data creation
-- Editing test-created data
-- Validation checks
-- Search, filter, sort, and pagination checks
-
-If an action is blocked, the run reports: `Blocked by safety guard.`
-
-## Project Structure
-
-```text
-agent/src/browser/       Playwright browser engine, selectors, state, actions
-agent/src/qa/            QA engine, detectors, validators, playbooks
-agent/src/reports/       Markdown, JSON, and Excel report writers
-agent/src/api-agent/     Groq API tool loop
-agent/src/codex-agent/   Codex/no-API driver
-agent/src/memory/        Safe local memory managers
-agent/src/data/          Faker-based test data
-agent/tasks/             Example task JSON files
-agent/memory/            Local JSON memory stores
-agent/artifacts/         Local screenshots, logs, traces, and state
-agent/reports/           Local generated reports
-```
-
-## Browser-Use Inspiration
-
-This project uses `browser-use` as architecture inspiration only. Browser-use is Python-based; QaAgent remains TypeScript + Playwright. Inspired concepts include browser state extraction, clickable element indexes, custom tools, persistent sessions, screenshots, and task-based actions.
-
-Related notes live in `agent/integrations/browser-use/`.
-
-## ECC Inspiration
-
-This project also borrows process ideas from `affaan-m/ECC`: quality gates, security-first workflows, risk-based E2E testing, flaky-test handling, artifact discipline, and clear agent guide files. ECC is not installed or required.
-
-Related notes live in `agent/integrations/ecc/`.
-
-## Troubleshooting
-
-- If Groq mode says `GROQ_API_KEY is missing`, add it to `.env.local` or use Codex/no-API mode.
-- If a Playwright browser is missing, run `npx playwright install`.
-- If selectors fail, run `npm run agent:state -- --url "<url>" --headed` and inspect `agent/artifacts/state/latest-browser-state.json`.
-- If login is needed, set `TEST_EMAIL` and `TEST_PASSWORD` in `.env.local` and reference the env names in task JSON.
-- If a complex CRM flow needs precision, add explicit task steps or update selector memory.
-
-## Roadmap
-
-- Deeper selector healing across every action path.
-- Deeper module crawler for full-professional runs.
-- Visual regression checks.
-- Stronger auth/session profile support without storing secrets.
-- CI smoke tests.
-- Deeper accessibility checks.
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

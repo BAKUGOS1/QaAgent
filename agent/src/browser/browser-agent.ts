@@ -5,6 +5,7 @@ import { ConsoleListener } from "./console-listener.js";
 import { NetworkListener } from "./network-listener.js";
 import { Recorder } from "./recorder.js";
 import { detectBrokenImages, detectFormFields, getPageState, getVisibleButtons, getVisibleInputs } from "./page-analyzer.js";
+import { resolveSelector } from "./selector-healer.js";
 import { ensureDir, timestampForFile } from "../shared/utils.js";
 import type { BrowserState } from "../shared/types.js";
 
@@ -13,6 +14,8 @@ export class BrowserAgent {
   private context?: BrowserContext;
   private page?: Page;
   private traceStarted = false;
+  private cachedState?: BrowserState;
+  private stateStale = true;
   private readonly consoleListener = new ConsoleListener();
   private readonly networkListener = new NetworkListener();
   readonly recorder = new Recorder();
@@ -40,6 +43,13 @@ export class BrowserAgent {
     }).catch(() => undefined);
     this.consoleListener.attach(this.page);
     this.networkListener.attach(this.page);
+
+    // Listen for new pages/popups
+    this.context.on("page", (newPage) => {
+      this.consoleListener.attach(newPage);
+      this.networkListener.attach(newPage);
+      this.recorder.record(`New page/popup opened: ${newPage.url()}`);
+    });
   }
 
   async close(): Promise<void> {
@@ -52,17 +62,47 @@ export class BrowserAgent {
     return this.page;
   }
 
+  /** Switch focus to a popup/new tab if one was opened */
+  async switchToLatestPage(): Promise<void> {
+    if (!this.context) return;
+    const pages = this.context.pages();
+    if (pages.length > 1) {
+      this.page = pages[pages.length - 1];
+      this.consoleListener.attach(this.page);
+      this.networkListener.attach(this.page);
+      this.markStateStale();
+      this.recorder.record(`Switched to page: ${this.page.url()}`);
+    }
+  }
+
+  private markStateStale(): void {
+    this.stateStale = true;
+    this.cachedState = undefined;
+  }
+
   async openUrl(url: string): Promise<string> {
     await this.activePage.goto(url, { waitUntil: "domcontentloaded", timeout: 60_000 });
     this.recorder.record(`Opened ${url}`);
+    this.markStateStale();
     await this.saveBrowserState();
     return this.activePage.url();
   }
 
   async click(selector: string): Promise<void> {
-    await this.activePage.locator(selector).first().click({ timeout: 15_000 });
+    try {
+      await this.activePage.locator(selector).first().click({ timeout: 15_000 });
+    } catch {
+      // Fallback: try selector healer
+      const healed = await resolveSelector(this, this.getUrl(), selector, selector);
+      if (healed.selector && healed.strategy !== "failed") {
+        await this.activePage.locator(healed.selector).first().click({ timeout: 15_000 });
+        this.recorder.record(`Healed selector (${healed.strategy}): ${selector} → ${healed.selector}`);
+      } else {
+        throw new Error(`Click failed: selector "${selector}" not found even after healing.`);
+      }
+    }
     this.recorder.record(`Clicked ${selector}`);
-    await this.saveBrowserState();
+    this.markStateStale();
   }
 
   async clickByIndex(index: number): Promise<void> {
@@ -76,31 +116,41 @@ export class BrowserAgent {
   async clickByText(text: string): Promise<void> {
     await this.activePage.getByText(text, { exact: false }).first().click({ timeout: 15_000 });
     this.recorder.record(`Clicked text ${text}`);
-    await this.saveBrowserState();
+    this.markStateStale();
   }
 
   async clickByRole(role: string, name?: string): Promise<void> {
     await this.activePage.getByRole(role as never, name ? { name } : undefined).first().click({ timeout: 15_000 });
     this.recorder.record(`Clicked role ${role}${name ? ` named ${name}` : ""}`);
-    await this.saveBrowserState();
+    this.markStateStale();
   }
 
   async fill(selector: string, value: string): Promise<void> {
-    await this.activePage.locator(selector).first().fill(value, { timeout: 15_000 });
+    try {
+      await this.activePage.locator(selector).first().fill(value, { timeout: 15_000 });
+    } catch {
+      const healed = await resolveSelector(this, this.getUrl(), selector, selector);
+      if (healed.selector && healed.strategy !== "failed") {
+        await this.activePage.locator(healed.selector).first().fill(value, { timeout: 15_000 });
+        this.recorder.record(`Healed selector (${healed.strategy}): ${selector} → ${healed.selector}`);
+      } else {
+        throw new Error(`Fill failed: selector "${selector}" not found even after healing.`);
+      }
+    }
     this.recorder.record(`Filled ${selector}`);
-    await this.saveBrowserState();
+    this.markStateStale();
   }
 
   async fillByLabel(label: string, value: string): Promise<void> {
     await this.activePage.getByLabel(label, { exact: false }).first().fill(value, { timeout: 15_000 });
     this.recorder.record(`Filled label ${label}`);
-    await this.saveBrowserState();
+    this.markStateStale();
   }
 
   async fillByPlaceholder(placeholder: string, value: string): Promise<void> {
     await this.activePage.getByPlaceholder(placeholder, { exact: false }).first().fill(value, { timeout: 15_000 });
     this.recorder.record(`Filled placeholder ${placeholder}`);
-    await this.saveBrowserState();
+    this.markStateStale();
   }
 
   async fillByName(name: string, value: string): Promise<void> {
@@ -108,9 +158,19 @@ export class BrowserAgent {
   }
 
   async press(selector: string, key: string): Promise<void> {
-    await this.activePage.locator(selector).first().press(key, { timeout: 15_000 });
+    try {
+      await this.activePage.locator(selector).first().press(key, { timeout: 15_000 });
+    } catch {
+      const healed = await resolveSelector(this, this.getUrl(), selector, selector);
+      if (healed.selector && healed.strategy !== "failed") {
+        await this.activePage.locator(healed.selector).first().press(key, { timeout: 15_000 });
+        this.recorder.record(`Healed selector (${healed.strategy}): ${selector} → ${healed.selector}`);
+      } else {
+        throw new Error(`Press failed: selector "${selector}" not found even after healing.`);
+      }
+    }
     this.recorder.record(`Pressed ${key} on ${selector}`);
-    await this.saveBrowserState();
+    this.markStateStale();
   }
 
   async waitForSelector(selector: string): Promise<void> {
@@ -121,11 +181,55 @@ export class BrowserAgent {
   async waitForLoad(): Promise<void> {
     await this.activePage.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => undefined);
     this.recorder.record("Waited for page load");
+    this.markStateStale();
+  }
+
+  async waitForNavigation(): Promise<void> {
+    await this.activePage.waitForURL(/.+/, { timeout: 15_000 }).catch(() => undefined);
+    this.recorder.record("Waited for navigation");
+    this.markStateStale();
   }
 
   async wait(ms: number): Promise<void> {
     await this.activePage.waitForTimeout(ms);
     this.recorder.record(`Waited ${ms}ms`);
+  }
+
+  /** Scroll the page by a given direction. Default scrolls down by one viewport. */
+  async scroll(direction: "down" | "up" = "down", amount = 600): Promise<void> {
+    const delta = direction === "down" ? amount : -amount;
+    await this.activePage.mouse.wheel(0, delta);
+    await this.activePage.waitForTimeout(300);
+    this.recorder.record(`Scrolled ${direction} by ${amount}px`);
+    this.markStateStale();
+  }
+
+  /** Select an option from a <select> dropdown */
+  async selectOption(selector: string, value: string): Promise<void> {
+    try {
+      await this.activePage.locator(selector).first().selectOption(value, { timeout: 15_000 });
+    } catch {
+      // Try by label if value didn't match
+      await this.activePage.locator(selector).first().selectOption({ label: value }, { timeout: 15_000 });
+    }
+    this.recorder.record(`Selected option "${value}" in ${selector}`);
+    this.markStateStale();
+  }
+
+  /** Hover over an element */
+  async hover(selector: string): Promise<void> {
+    try {
+      await this.activePage.locator(selector).first().hover({ timeout: 15_000 });
+    } catch {
+      const healed = await resolveSelector(this, this.getUrl(), selector, selector);
+      if (healed.selector && healed.strategy !== "failed") {
+        await this.activePage.locator(healed.selector).first().hover({ timeout: 15_000 });
+      } else {
+        throw new Error(`Hover failed: selector "${selector}" not found.`);
+      }
+    }
+    this.recorder.record(`Hovered ${selector}`);
+    this.markStateStale();
   }
 
   async screenshot(label = "screenshot"): Promise<string> {
@@ -134,6 +238,7 @@ export class BrowserAgent {
     const filePath = path.join(dir, `${timestampForFile()}-${label.replace(/[^a-z0-9-]+/gi, "-").toLowerCase()}.png`);
     await this.activePage.screenshot({ path: filePath, fullPage: true });
     this.recorder.record(`Captured screenshot ${filePath}`);
+    this.markStateStale();
     await this.saveBrowserState(filePath);
     return filePath;
   }
@@ -166,6 +271,10 @@ export class BrowserAgent {
     return this.networkListener.getErrors();
   }
 
+  getApiResponses(): Array<{ url: string; status: number; body: string }> {
+    return this.networkListener.getApiResponses();
+  }
+
   detectBrokenImages(): Promise<string[]> {
     return detectBrokenImages(this.activePage);
   }
@@ -178,13 +287,29 @@ export class BrowserAgent {
     return getPageState(this.activePage, this.getConsoleErrors(), this.getNetworkErrors(), screenshotPath);
   }
 
+  /**
+   * Save browser state. Uses a lazy cache — if state hasn't changed
+   * since last save, returns the cached version.
+   */
   async saveBrowserState(screenshotPath?: string): Promise<BrowserState> {
+    // If screenshotPath is provided, always refresh (it's an explicit save)
+    if (!this.stateStale && this.cachedState && !screenshotPath) {
+      return this.cachedState;
+    }
+
     const dir = path.join(process.cwd(), "agent", "artifacts", "state");
     ensureDir(dir);
     const state = await this.getPageState(screenshotPath);
     const filePath = path.join(dir, "latest-browser-state.json");
     fs.writeFileSync(filePath, `${JSON.stringify(state, null, 2)}\n`);
+    this.cachedState = state;
+    this.stateStale = false;
     return state;
+  }
+
+  /** Force a fresh state capture on next call */
+  invalidateState(): void {
+    this.markStateStale();
   }
 
   async saveTrace(): Promise<string | undefined> {

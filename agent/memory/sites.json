@@ -8,7 +8,9 @@
       "Clickable elements indexed: 1",
       "Console errors: 0",
       "Network errors: 0"
-    ]
+    ],
+    "lastRunSummary": "Partial Pass: 0 bugs, 1 UX issues",
+    "previousBugs": []
   },
   "https://www.wikipedia.org/": {
     "lastAuditedAt": "2026-06-05T15:39:58.167Z",

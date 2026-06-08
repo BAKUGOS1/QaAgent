@@ -31,5 +31,8 @@
     "loginEmail": "input[name='email']",
     "loginPassword": "input[name='password']",
     "loginSubmit": "button:has-text('Login')"
+  },
+  "https://example.com/": {
+    "a[role=\"link\"]:has-text(\"Learn more\")": "a[role=\"link\"]:has-text(\"Learn more\")"
   }
 }

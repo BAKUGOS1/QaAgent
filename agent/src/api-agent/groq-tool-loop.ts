@@ -92,9 +92,15 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
         continue;
       }
       for (const call of response.toolCalls) {
-        const result = await executeToolCall(browser, task, generatedLeads, call.function.name, call.function.arguments, screenshots);
-        if (call.function.name === "generate_report") stopRequested = true;
-        messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
+        try {
+          const result = await executeToolCall(browser, task, generatedLeads, call.function.name, call.function.arguments, screenshots);
+          if (call.function.name === "generate_report") stopRequested = true;
+          messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
+        } catch (toolError) {
+          const errorMessage = toolError instanceof Error ? toolError.message : String(toolError);
+          messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify({ error: errorMessage, recoverable: true }) });
+          browser.recorder.record(`Tool ${call.function.name} failed: ${errorMessage}`);
+        }
       }
     }
 
@@ -245,6 +251,24 @@ async function executeToolCall(
       return { errors: browser.getConsoleErrors() };
     case "get_network_errors":
       return { errors: browser.getNetworkErrors() };
+    case "get_api_responses":
+      return { responses: browser.getApiResponses() };
+    case "scroll":
+    case "scroll_page":
+      await browser.scroll(
+        (String(args.direction || "down")) as "down" | "up",
+        Number(args.amount || 600)
+      );
+      return { ok: true };
+    case "select_option":
+      await browser.selectOption(String(args.selector), String(args.value || ""));
+      return { ok: true };
+    case "hover":
+      await browser.hover(String(args.selector));
+      return { ok: true };
+    case "wait_for_navigation":
+      await browser.waitForNavigation();
+      return { ok: true };
     case "create_random_lead_data":
     case "generate_test_data":
       return { leads: generatedLeads.slice(0, Number(args.count || generatedLeads.length)) };

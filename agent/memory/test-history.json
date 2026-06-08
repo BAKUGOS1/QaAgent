@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-06-08T02:47:20.747Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-17-agent-report.md",
+    "reportJson": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-17-agent-report.json",
+    "reportExcel": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-17-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-06-08T02:48:00.357Z",
+    "status": "Partial Pass",
+    "reportExcel": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-18-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-06-08T02:49:05.953Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-19-agent-report.md",
+    "reportJson": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-19-agent-report.json",
+    "reportExcel": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-19-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-06-08T02:49:39.827Z",
+    "status": "Partial Pass",
+    "reportExcel": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-20-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-06-08T02:52:41.551Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-23-agent-report.md",
+    "reportJson": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-23-agent-report.json",
+    "reportExcel": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-23-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-06-08T02:53:16.083Z",
+    "status": "Partial Pass",
+    "reportExcel": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-08-23-agent-report.xlsx"
+  }
+]
