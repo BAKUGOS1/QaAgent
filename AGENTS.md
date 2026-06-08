@@ -60,9 +60,9 @@ Professional QA runs must explore conditions, not stop at the first blocked path
 
 ## Report Style
 
-User-facing issue table: `Module`, `Issue`, `Description`, `Priority`, `Status`.
+User-facing issue table: `Module`, `Issue`, `Description`, `Priority`, `Status`, `Screenshot`.
 
-Excel is the default user-facing artifact. The first sheet must be `Bug Report` with the clean issue table only. The second sheet should be `Summary`. Technical evidence sheets can follow after that. Screenshots are embedded in the workbook when available. Excel must be readable without manual resizing: practical widths, wrapped text, dynamic row heights, frozen/filterable headers, and colored header/priority/status cells.
+Excel is the default user-facing artifact. The first sheet must be `Bug Report` with the clean issue table only. The second sheet should be `Summary`. Technical evidence sheets can follow after that. Screenshots are embedded in the workbook when available. The first `Bug Report` sheet must include a `Screenshot` column and embed each issue screenshot directly in that row's screenshot cell when evidence exists. Excel must be readable without manual resizing: practical widths, wrapped text, dynamic row heights, frozen/filterable headers, and colored header/priority/status cells.
 
 Repeated duplicate bugs should be aggregated into one clear row. Keep raw evidence in the technical sheets instead of making the user-facing bug table noisy.
 

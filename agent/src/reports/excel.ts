@@ -63,7 +63,8 @@ function issueMatrixRows(context: RunContext): Row[] {
     Issue: conciseText(issue.title),
     Description: clearText(issue.description),
     Priority: issue.severity,
-    Status: context.finalStatus === "Fail" ? "Blocked" : "Open"
+    Status: context.finalStatus === "Fail" ? "Blocked" : "Open",
+    Screenshot: issue.screenshot ? "embedded" : ""
   }));
   if (!rows.length && context.coverage && context.finalStatus !== "Pass") {
     return [{
@@ -71,7 +72,8 @@ function issueMatrixRows(context: RunContext): Row[] {
       Issue: "Coverage incomplete",
       Description: clearText(`${context.coverage.notes.join(" ")} Not tested: ${context.coverage.notTested}. Needs verification: ${context.coverage.needsVerification}. Blocked: ${context.coverage.blocked}.`),
       Priority: context.coverage.blocked ? "High" : "Medium",
-      Status: context.coverage.blocked ? "Blocked" : "Needs Verification"
+      Status: context.coverage.blocked ? "Blocked" : "Needs Verification",
+      Screenshot: ""
     }];
   }
   return rows.length ? rows : [{
@@ -79,8 +81,19 @@ function issueMatrixRows(context: RunContext): Row[] {
     Issue: "No issue found",
     Description: "No bugs were detected during this run.",
     Priority: "Low",
-    Status: "Pass"
+    Status: "Pass",
+    Screenshot: ""
   }];
+}
+
+function issueMatrixImages(context: RunContext): SheetImage[] {
+  return userFacingIssues(context)
+    .map((issue, index) => issue.screenshot ? {
+      path: issue.screenshot,
+      rowIndex: index + 1,
+      columnIndex: 5
+    } : undefined)
+    .filter((image): image is SheetImage => Boolean(image));
 }
 
 function summaryRows(context: RunContext): Row[] {
@@ -213,7 +226,7 @@ function browserStateRows(context: RunContext): Row[] {
 
 export function writeExcelReport(context: RunContext, filePath: string): void {
   const sheets: Sheet[] = [
-    { name: "Bug Report", rows: issueMatrixRows(context) },
+    { name: "Bug Report", rows: issueMatrixRows(context), images: issueMatrixImages(context) },
     { name: "Summary", rows: summaryRows(context) },
     {
       name: "Run Details",
@@ -385,10 +398,11 @@ ${drawing}
 }
 
 function columnWidths(headers: string[], rows: Row[], hasDrawing: boolean): string {
+  const isScreenshotGallery = hasDrawing && headers.includes("path") && headers.includes("image");
   const widths = headers.map((header, index) => {
-    if (hasDrawing && index === 0) return 10;
-    if (hasDrawing && index === 1) return 70;
-    if (hasDrawing && index === 2) return 36;
+    if (isScreenshotGallery && index === 0) return 10;
+    if (isScreenshotGallery && index === 1) return 70;
+    if (isScreenshotGallery && index === 2) return 36;
     const preferred = preferredColumnWidth(header);
     if (preferred) return preferred;
     const longest = Math.max(header.length, ...rows.map((row) => String(row[header] ?? "").split("\n").reduce((max, line) => Math.max(max, line.length), 0)));

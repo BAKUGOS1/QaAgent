@@ -39,7 +39,7 @@ npm run agent:codex -- --task-file <task-file> --headed
   `Result: 1/5 lead conditions saved.`
   `Passed: 1. Tag/source/owner - saved and searchable.`
   `Failed: 1. Minimal contact fields - not searchable after Save. 2. Full address - not searchable after Save.`
-- Use this table shape for user-facing reports: `Module`, `Issue`, `Description`, `Priority`, `Status`.
+- Use this table shape for user-facing reports: `Module`, `Issue`, `Description`, `Priority`, `Status`, `Screenshot`.
 - Generate Excel only by default. Generate Markdown/JSON only when explicitly requested for debugging or automation.
 - Do not generate CSV.
 - Excel first sheet must be `Bug Report` with only user-facing bug rows.
@@ -47,6 +47,7 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Excel reports should be readable without manual fixing: practical column widths, wrapped text, dynamic row heights, frozen/filter headers, and colored header/priority/status cells.
 - Aggregate repeated duplicate bugs into one clear row. Do not repeat the same bug many times unless each row is materially different.
 - Excel reports must embed screenshots/images in the workbook when screenshots exist.
+- The first `Bug Report` sheet must include a `Screenshot` column. If an issue has screenshot evidence, place the image directly inside that row's screenshot cell, not only in a separate screenshots sheet.
 - Reports must include coverage truth: modules/scopes tested, actions attempted, evidence, status, blockers, and confidence.
 - Do not push reports, screenshots, logs, traces, browser state, or `.env` files to GitHub.
 

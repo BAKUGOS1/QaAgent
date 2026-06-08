@@ -68,19 +68,22 @@ async function main(): Promise<void> {
       title: "Some lead conditions do not persist",
       severity: "High",
       area: "Lead Module",
-      description: "Result: 1/5 lead conditions saved.\nPassed:\n1. Tag/source/owner - saved and searchable.\nFailed:\n1. Minimal contact fields - not searchable after Save."
+      description: "Result: 1/5 lead conditions saved.\nPassed:\n1. Tag/source/owner - saved and searchable.\nFailed:\n1. Minimal contact fields - not searchable after Save.",
+      screenshot: result.context.screenshots[0]
     }],
     uxIssues: [],
     missingValidations: [],
     consoleErrors: [],
     networkErrors: [],
-    screenshots: [],
+    screenshots: [result.context.screenshots[0]],
     loginResult: "Not required",
     finalStatus: "Partial Pass"
   };
   writeExcelReport(multilineContext, multilineExcelPath);
   const multilineExcelBytes = fs.readFileSync(multilineExcelPath, "utf8");
   assert.ok(multilineExcelBytes.includes("Result: 1/5 lead conditions saved.\nPassed:"), "multiline descriptions must keep line breaks");
+  assert.ok(multilineExcelBytes.includes("Screenshot"), "bug report screenshot column missing");
+  assert.ok(multilineExcelBytes.includes("xl/worksheets/_rels/sheet1.xml.rels"), "bug report sheet image relationship missing");
 
   const excelOnlyTask: QaTask = {
     ...task,
