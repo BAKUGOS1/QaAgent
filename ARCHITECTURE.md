@@ -74,6 +74,8 @@ agent/src/
 │   ├── actions.ts         # Maps command strings to browser method execution
 │   ├── browser-agent.ts   # Unified browser context, state cache, actions
 │   ├── console-listener.ts
+│   ├── cypress-runtime.ts # Retryable assertions, failure screenshots, command log
+│   ├── fixtures.ts        # Non-sensitive fixture lookup for task steps
 │   ├── login-runner.ts    # Secure credential autofill and validation
 │   ├── network-listener.ts# Collects network errors & intercepting API payloads
 │   ├── page-analyzer.ts   # Computes accessible DOM representation
@@ -156,14 +158,22 @@ To prevent the agent from performing destructive actions in production/staging e
 - **Safe Tool Whitelist**: Tools that only observe or perform standard form interaction (e.g., `open_url`, `click_by_index`, `scroll`, `hover`) bypass filters immediately, preventing false positives.
 - **Intent Pattern Matching**: Unknown or custom tools are analyzed against safety rules (regex check) for action flags before execution. This prevents data fields (like entering `email: "delete-me@gmail.com"`) from triggering message-send blockages.
 
-### 4. Zero-Dependency OOXML Excel Builder (`excel.ts`)
+### 4. Cypress-Inspired Reliability Layer (`cypress-runtime.ts`)
+QaAgent stays Playwright-native but adopts Cypress-style reliability patterns for explicit task steps:
+- Query/assertion steps retry until a timeout and re-check the current DOM each attempt.
+- Mutating actions are recorded as single-shot commands while Playwright handles actionability waits.
+- Failed commands can capture a failure screenshot.
+- Every explicit task command is written to a structured Command Log with status, attempts, duration, error, and screenshot path.
+- Fixture references load reusable non-sensitive values from `agent/fixtures`.
+
+### 5. Zero-Dependency OOXML Excel Builder (`excel.ts`)
 To remain lightweight and portable, the Excel report generator uses **no external libraries** like `exceljs` or `xlsx`. It compiles raw OpenXML files directly:
 - Writes structure files: `[Content_Types].xml`, `xl/styles.xml`, `xl/workbook.xml`, `xl/worksheets/sheet1.xml`, etc.
 - Serializes screenshots into PNG files under `xl/media/` and writes `drawing.xml` elements to position screenshots inside cells.
 - Standardizes styling: formats headers (purple background, bold white text), severity tiers (Red/Critical, Amber/High, Yellow/Medium, Blue/Low), and column widths.
 - Bundles them using a lightweight, pure Node.js CRC32-based ZIP compiler.
 
-### 5. Autonomous Explorer (`autonomous-explorer.ts`)
+### 6. Autonomous Explorer (`autonomous-explorer.ts`)
 In Codex/no-API mode, the agent isn't passive. It crawls and checks sites dynamically:
 - Locates navbar, sidebar, and tab navigation links.
 - Explores linked pages (restricted to the same origin URL).

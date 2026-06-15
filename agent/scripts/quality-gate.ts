@@ -33,6 +33,7 @@ function run(name: string, command: string, args: string[]): void {
 function secretScan(): void {
   const roots = [
     "agent/src",
+    "agent/fixtures",
     "agent/scripts",
     "agent/tests",
     "agent/tasks",

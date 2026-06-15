@@ -1,0 +1,8 @@
+{
+  "name": "Qa Test User",
+  "email": "qa.user@example.com",
+  "phone": "+91 90000 00000",
+  "company": "QaAgent Demo Co",
+  "city": "Bengaluru",
+  "role": "QA Tester"
+}

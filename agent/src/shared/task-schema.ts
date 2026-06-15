@@ -47,6 +47,13 @@ const reportSchema = z.object({
   embedScreenshotsInExcel: true
 });
 
+const cypressInspiredSchema = z.object({
+  defaultCommandTimeoutMs: z.number().int().min(0).max(120_000).default(4_000),
+  pollIntervalMs: z.number().int().min(25).max(5_000).default(250),
+  screenshotOnFailure: z.boolean().default(true),
+  fixtureDir: z.string().optional()
+}).optional();
+
 const stepSchema = z.object({
   action: z.enum([
     "open",
@@ -61,16 +68,24 @@ const stepSchema = z.object({
     "press",
     "wait",
     "screenshot",
-    "analyze"
+    "analyze",
+    "assert_visible",
+    "assert_text",
+    "assert_url_includes",
+    "assert_count"
   ]),
   selector: z.string().optional(),
   index: z.number().int().optional(),
   role: z.string().optional(),
   text: z.string().optional(),
   value: z.string().optional(),
+  expected: z.string().optional(),
+  count: z.number().int().optional(),
   key: z.string().optional(),
   url: z.string().optional(),
-  label: z.string().optional()
+  label: z.string().optional(),
+  timeoutMs: z.number().int().min(0).max(120_000).optional(),
+  fixture: z.string().optional()
 });
 
 export const qaTaskSchema = z.object({
@@ -92,6 +107,7 @@ export const qaTaskSchema = z.object({
   login: loginSchema,
   modules: z.array(moduleSchema).default([]),
   report: reportSchema,
+  cypress: cypressInspiredSchema,
   safety: safetySchema.default({
     allowDelete: false,
     allowArchive: false,

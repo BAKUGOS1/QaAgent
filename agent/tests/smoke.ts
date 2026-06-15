@@ -5,6 +5,7 @@ import assert from "node:assert";
 import { loadConfig } from "../src/config.js";
 import { GroqClient } from "../src/api-agent/groq-client.js";
 import { runCodexDriver } from "../src/codex-agent/codex-driver.js";
+import { loadFixtureValue } from "../src/browser/fixtures.js";
 import { defaultSafety, assertSafeAction } from "../src/shared/safety-guard.js";
 import { createRandomLeadData } from "../src/data/lead-data.js";
 import { writeExcelReport } from "../src/reports/excel.js";
@@ -28,9 +29,18 @@ async function main(): Promise<void> {
     scope: ["smoke", "navigation", "console", "network", "screenshot"],
     safety: defaultSafety(),
     report: { excel: true, markdown: true, json: true, embedScreenshotsInExcel: true },
+    cypress: {
+      defaultCommandTimeoutMs: 5000,
+      pollIntervalMs: 100,
+      screenshotOnFailure: true
+    },
     modules: [],
     steps: [
       { action: "screenshot", label: "smoke-home" },
+      { action: "assert_text", expected: "Example Domain", label: "homepage headline" },
+      { action: "assert_visible", selector: "h1", label: "headline visible" },
+      { action: "assert_url_includes", expected: "example.com", label: "url contains domain" },
+      { action: "assert_count", selector: "h1", count: 1, label: "one h1" },
       { action: "analyze", label: "smoke-state" }
     ]
   };
@@ -45,11 +55,14 @@ async function main(): Promise<void> {
   assert.ok(result.context.screenshots.length >= 1, "screenshot not captured");
   assert.ok(result.context.tracePath && fs.existsSync(result.context.tracePath), "trace not captured");
   assert.ok(result.context.coverage?.items.length, "coverage summary missing");
+  assert.ok(result.context.commandLog?.some((entry) => entry.kind === "assertion"), "assertion command log missing");
+  assert.ok(result.context.commandLog?.some((entry) => entry.kind === "assertion" && entry.attempts >= 1), "assertion attempts missing");
   assert.ok(fs.existsSync("agent/artifacts/state/latest-browser-state.json"), "browser state missing");
   assert.ok(result.context.browserState?.clickableElements.length !== undefined, "clickable index missing");
 
   const excelBytes = fs.readFileSync(result.reports.excelPath, "utf8");
   assert.ok(excelBytes.includes("Bug Report"), "user-facing bug report sheet missing from excel");
+  assert.ok(excelBytes.includes("Command Log"), "command log sheet missing from excel");
   assert.ok(excelBytes.includes("Coverage"), "coverage sheet missing from excel");
   assert.ok(excelBytes.includes("xl/media/"), "embedded screenshot media missing from excel");
   assert.ok(excelBytes.includes("xl/styles.xml"), "excel styles missing");
@@ -84,6 +97,7 @@ async function main(): Promise<void> {
   assert.ok(multilineExcelBytes.includes("Result: 1/5 lead conditions saved.\nPassed:"), "multiline descriptions must keep line breaks");
   assert.ok(multilineExcelBytes.includes("Screenshot"), "bug report screenshot column missing");
   assert.ok(multilineExcelBytes.includes("xl/worksheets/_rels/sheet1.xml.rels"), "bug report sheet image relationship missing");
+  assert.equal(loadFixtureValue("example-user.email"), "qa.user@example.com");
 
   const excelOnlyTask: QaTask = {
     ...task,

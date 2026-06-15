@@ -13,8 +13,17 @@
     "allowSettingsChange": false,
     "allowSensitiveExport": false
   },
+  "cypress": {
+    "defaultCommandTimeoutMs": 5000,
+    "pollIntervalMs": 100,
+    "screenshotOnFailure": true
+  },
   "steps": [
     { "action": "screenshot", "label": "example-home" },
+    { "action": "assert_text", "expected": "Example Domain", "label": "homepage headline" },
+    { "action": "assert_visible", "selector": "h1", "label": "headline visible" },
+    { "action": "assert_url_includes", "expected": "example.com", "label": "url contains domain" },
+    { "action": "assert_count", "selector": "h1", "count": 1, "label": "one h1" },
     { "action": "analyze", "label": "analyze homepage" }
   ]
 }

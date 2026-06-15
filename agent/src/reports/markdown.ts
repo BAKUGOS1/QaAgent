@@ -59,6 +59,21 @@ function coverageMatrix(context: RunContext): string {
   ].join("\n");
 }
 
+function commandLogMatrix(context: RunContext): string {
+  const rows = context.commandLog || [];
+  if (!rows.length) return "No command log entries captured.";
+  return [
+    "| # | Status | Kind | Command | Target | Attempts | Duration | Screenshot/Error |",
+    "|---|---|---|---|---|---|---|---|",
+    ...rows.map((entry) => {
+      const screenshotOrError = entry.screenshotPath
+        ? `Screenshot: ${entry.screenshotPath}${entry.error ? ` Error: ${entry.error}` : ""}`
+        : entry.error || "";
+      return `| ${entry.index} | ${escapeTable(entry.status)} | ${escapeTable(entry.kind)} | ${escapeTable(entry.name)} | ${escapeTable(entry.target || "")} | ${entry.attempts} | ${entry.durationMs}ms | ${escapeTable(screenshotOrError)} |`;
+    })
+  ].join("\n");
+}
+
 function escapeTable(value: string): string {
   return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
 }
@@ -88,6 +103,10 @@ export function renderMarkdownReport(context: RunContext): string {
 ## Steps Performed
 
 ${context.stepsPerformed.length ? context.stepsPerformed.map((step) => `- ${step}`).join("\n") : "No explicit steps were performed."}
+
+## Cypress-Style Command Log
+
+${commandLogMatrix(context)}
 
 ## Test Data Created
 

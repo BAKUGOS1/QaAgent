@@ -145,6 +145,7 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
       tracePath,
       browserState: state,
       coverage,
+      commandLog: browser.recorder.commandLog(),
       qaChecklist: detected.checklist,
       memoryNotes: [
         `QA profile: ${task.qaProfile}`,
@@ -190,6 +191,7 @@ export async function runGroqToolLoop(task: QaTask, headed: boolean, maxSteps: n
       screenshots,
       tracePath,
       coverage,
+      commandLog: browser.recorder.commandLog(),
       qaChecklist: {},
       memoryNotes: [...coverage.notes, ...(tracePath ? [`Trace: ${tracePath}`] : [])],
       loginResult,

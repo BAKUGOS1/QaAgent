@@ -3,6 +3,8 @@ export type Severity = "Critical" | "High" | "Medium" | "Low";
 export type FinalQaStatus = "Pass" | "Partial Pass" | "Fail";
 export type CoverageStatus = "Pass" | "Partial" | "Blocked" | "Needs Verification" | "Not Tested";
 export type CoverageConfidence = "High" | "Medium" | "Low";
+export type CommandLogKind = "system" | "query" | "assertion" | "action" | "fixture";
+export type CommandLogStatus = "Pass" | "Fail";
 export type QaProfile =
   | "smoke"
   | "functional"
@@ -42,6 +44,14 @@ export interface QaTask {
   report?: ReportConfig;
   safety: SafetyPermissions;
   steps?: TaskStep[];
+  cypress?: CypressInspiredConfig;
+}
+
+export interface CypressInspiredConfig {
+  defaultCommandTimeoutMs?: number;
+  pollIntervalMs?: number;
+  screenshotOnFailure?: boolean;
+  fixtureDir?: string;
 }
 
 export interface LoginConfig {
@@ -83,15 +93,23 @@ export interface TaskStep {
     | "press"
     | "wait"
     | "screenshot"
-    | "analyze";
+    | "analyze"
+    | "assert_visible"
+    | "assert_text"
+    | "assert_url_includes"
+    | "assert_count";
   selector?: string;
   index?: number;
   role?: string;
   text?: string;
   value?: string;
+  expected?: string;
+  count?: number;
   key?: string;
   url?: string;
   label?: string;
+  timeoutMs?: number;
+  fixture?: string;
 }
 
 export interface LeadData {
@@ -141,6 +159,20 @@ export interface CoverageSummary {
   confidence: CoverageConfidence;
   notes: string[];
   items: CoverageItem[];
+}
+
+export interface CommandLogEntry {
+  index: number;
+  kind: CommandLogKind;
+  name: string;
+  target?: string;
+  status: CommandLogStatus;
+  attempts: number;
+  startedAt: string;
+  endedAt: string;
+  durationMs: number;
+  error?: string;
+  screenshotPath?: string;
 }
 
 export interface IndexedElement {
@@ -204,6 +236,7 @@ export interface RunContext {
   tracePath?: string;
   browserState?: BrowserState;
   coverage?: CoverageSummary;
+  commandLog?: CommandLogEntry[];
   qaChecklist?: Record<string, string>;
   memoryNotes?: string[];
   loginResult: string;

@@ -27,6 +27,7 @@ QaAgent runs a local, highly-instrumented Playwright browser, captures trace evi
 * **Autonomous Crawling & Testing**: In Codex/no-API mode, the agent automatically discovers links, sidebar items, tabs, and modals within the same origin, tests form validation, and takes full-page screenshots at every step.
 * **Dual Execution Modes**: Choose **Codex/no-API mode** (ideal for local-first execution with local credentials) or **Groq API mode** (autonomous agent CLI loop utilizing model-driven tool calls).
 * **Multi-Strategy Selector Healing**: Automatically attempts to recover from failing CSS selectors using selectors history memory, text hints, ARIA roles, or indexed state coordinates before raising a failure.
+* **Cypress-Inspired Reliability**: Retryable assertions, fixture-backed task values, failure screenshots, and a Command Log sheet make dynamic UI runs easier to debug without adding Cypress as a runtime dependency.
 * **Two-Tier Safety Guard**: A proactive firewall blocking destructive actions (deletes, settings alterations, payments, bulk updates, and message broadcast sends) by default. Safe tools bypass checks to eliminate false positives.
 * **Fleshed-out QA Detectors**: Automated DOM audits checking for accessibility faults, invalid forms, pagination/horizontal scrolling failures in tables, and console/network bottlenecks.
 * **Misleading UI Detection**: An API response interceptor capturing HTTP payloads to confirm if a user-facing success toast matches the actual server API response.
@@ -53,6 +54,24 @@ Run with a task file:
 ```bash
 npm run agent:codex -- --task-file agent/tasks/example-task.json --headed
 ```
+
+Cypress-style task assertions:
+```json
+{
+  "cypress": {
+    "defaultCommandTimeoutMs": 5000,
+    "pollIntervalMs": 100,
+    "screenshotOnFailure": true
+  },
+  "steps": [
+    { "action": "assert_visible", "selector": "h1" },
+    { "action": "assert_text", "expected": "Example Domain" },
+    { "action": "assert_url_includes", "expected": "example.com" }
+  ]
+}
+```
+
+More details: [agent/integrations/cypress/README.md](agent/integrations/cypress/README.md).
 
 ---
 

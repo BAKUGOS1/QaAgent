@@ -205,6 +205,36 @@ function coverageRows(context: RunContext): Row[] {
   }));
 }
 
+function commandLogRows(context: RunContext): Row[] {
+  const rows = context.commandLog || [];
+  if (!rows.length) {
+    return [{
+      index: 1,
+      status: "Not Captured",
+      kind: "",
+      name: "",
+      target: "No command log entries captured.",
+      attempts: 0,
+      durationMs: 0,
+      error: "",
+      screenshotPath: ""
+    }];
+  }
+  return rows.map((entry) => ({
+    index: entry.index,
+    status: entry.status,
+    kind: entry.kind,
+    name: entry.name,
+    target: clearText(entry.target || ""),
+    attempts: entry.attempts,
+    durationMs: entry.durationMs,
+    error: clearText(entry.error || ""),
+    screenshotPath: entry.screenshotPath
+      ? `=HYPERLINK("file:///${entry.screenshotPath.replace(/\\/g, "/")}", "View Failure Screenshot")`
+      : ""
+  }));
+}
+
 function browserStateRows(context: RunContext): Row[] {
   const state = context.browserState;
   if (!state) return [{ key: "state", value: "No browser state captured." }];
@@ -263,6 +293,7 @@ export function writeExcelReport(context: RunContext, filePath: string): void {
     },
     { name: "Bugs", rows: issueRows([...context.bugs, ...context.uxIssues, ...context.missingValidations]) },
     { name: "Test Steps", rows: listRows(context.stepsPerformed, "step") },
+    { name: "Command Log", rows: commandLogRows(context) },
     { name: "Coverage", rows: coverageRows(context) },
     { name: "Issue Matrix", rows: issueMatrixRows(context) },
     { name: "Test Data", rows: leadRows(context.generatedLeads) },
@@ -431,6 +462,12 @@ function preferredColumnWidth(header: string): number | undefined {
     Value: 60,
     Notes: 48,
     step: 90,
+    target: 60,
+    kind: 14,
+    name: 24,
+    attempts: 12,
+    durationMs: 14,
+    screenshotPath: 42,
     error: 90,
     note: 80,
     path: 70,

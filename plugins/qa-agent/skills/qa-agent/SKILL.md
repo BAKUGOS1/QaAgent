@@ -22,7 +22,7 @@ npm run agent:codex -- --task-file <task-file> --headed
 6. Inspect generated reports in `agent/reports/`.
 7. Inspect screenshots in `agent/artifacts/screenshots/`, traces in `agent/artifacts/traces/`, and state in `agent/artifacts/state/latest-browser-state.json`.
 8. Use indexed clickable elements from browser state to choose selectors.
-9. Add explicit task steps when deterministic coverage is missing.
+9. Add explicit Cypress-style assertion steps when deterministic coverage is missing.
 10. Re-run focused tests until the report honestly separates tested, partially tested, blocked, and not-tested areas.
 11. Run `npm run quality:gate` before pushing framework changes.
 12. Produce a final developer-ready bug report with report and evidence paths.
@@ -48,12 +48,15 @@ npm run agent:codex -- --task-file <task-file> --headed
 - Aggregate repeated duplicate bugs into one clear row. Do not repeat the same bug many times unless each row is materially different.
 - Excel reports must embed screenshots/images in the workbook when screenshots exist.
 - The first `Bug Report` sheet must include a `Screenshot` column. If an issue has screenshot evidence, place the image directly inside that row's screenshot cell, not only in a separate screenshots sheet.
+- Check the `Command Log` sheet for retry attempts, failures, and failure screenshot paths before deciding a bug is confirmed or flaky.
 - Reports must include coverage truth: modules/scopes tested, actions attempted, evidence, status, blockers, and confidence.
 - Do not push reports, screenshots, logs, traces, browser state, or `.env` files to GitHub.
 
 ## QA Rules
 
 - Use browser state indexes when selector guessing is uncertain.
+- Prefer `assert_visible`, `assert_text`, `assert_url_includes`, and `assert_count` over hard waits for dynamic UI checks.
+- Use fixture references such as `fixture:example-user.email` or `"fixture": "example-user.email"` for reusable non-sensitive values.
 - Keep Codex/no-API and Groq/API modes working.
 - Prioritize high-risk journeys first: auth, create/save/update, money, data loss, and destructive actions.
 - Preserve screenshot/state/trace evidence before marking a flow flaky.

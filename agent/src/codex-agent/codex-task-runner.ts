@@ -7,7 +7,7 @@ export async function runExplicitTaskSteps(browser: BrowserAgent, task: QaTask):
   const screenshots: string[] = [];
   for (const step of task.steps || []) {
     assertSafeAction(`${step.action} ${step.label || step.selector || step.value || ""}`, task.safety);
-    const screenshot = await runTaskStep(browser, step);
+    const screenshot = await runTaskStep(browser, step, task);
     if (screenshot) screenshots.push(screenshot);
   }
   return screenshots;
