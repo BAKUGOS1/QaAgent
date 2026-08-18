@@ -14,4 +14,6 @@ agent/artifacts/logs/*
 !agent/artifacts/logs/.gitkeep
 agent/artifacts/traces/*
 !agent/artifacts/traces/.gitkeep
+agent/artifacts/visual-diffs/*
+!agent/artifacts/visual-diffs/.gitkeep
 *.log

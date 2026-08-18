@@ -78,5 +78,117 @@
     "date": "2026-06-08T03:36:50.629Z",
     "status": "Partial Pass",
     "reportExcel": "C:\\Users\\MOHIT KUMAR\\OneDrive\\Documents\\QaAgent\\agent\\reports\\2026-06-08-09-07-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T07:15:42.242Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-46-agent-report.md",
+    "reportJson": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-46-agent-report.json",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-46-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T07:16:15.729Z",
+    "status": "Partial Pass",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-46-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T07:17:04.978Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-47-agent-report.md",
+    "reportJson": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-47-agent-report.json",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-47-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T07:17:37.190Z",
+    "status": "Partial Pass",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-48-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T07:19:12.088Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-49-agent-report.md",
+    "reportJson": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-49-agent-report.json",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-49-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T07:19:45.267Z",
+    "status": "Partial Pass",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-12-50-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T08:58:02.235Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-28-agent-report.md",
+    "reportJson": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-28-agent-report.json",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-28-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T08:58:38.503Z",
+    "status": "Partial Pass",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-29-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T08:59:03.912Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-29-agent-report.md",
+    "reportJson": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-29-agent-report.json",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-29-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T08:59:37.447Z",
+    "status": "Partial Pass",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-14-30-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T13:45:25.498Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-19-15-agent-report.md",
+    "reportJson": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-19-15-agent-report.json",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-19-15-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-14T13:45:59.981Z",
+    "status": "Partial Pass",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-14-19-16-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-18T07:15:21.464Z",
+    "status": "Partial Pass",
+    "reportMarkdown": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-18-12-45-agent-report.md",
+    "reportJson": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-18-12-45-agent-report.json",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-18-12-45-agent-report.xlsx"
+  },
+  {
+    "websiteUrl": "https://example.com",
+    "mode": "codex",
+    "date": "2026-08-18T07:15:57.788Z",
+    "status": "Partial Pass",
+    "reportExcel": "/Users/zytech/Documents/QaAgent/agent/reports/2026-08-18-12-46-agent-report.xlsx"
   }
 ]

@@ -66,6 +66,13 @@ Excel is the default user-facing artifact. The first sheet must be `Bug Report` 
 
 Repeated duplicate bugs should be aggregated into one clear row. Keep raw evidence in the technical sheets instead of making the user-facing bug table noisy.
 
+## Pre-Run Artifact & Temp Cleanup
+
+Before starting any new test run or QA task:
+- Automatically remove legacy temporary files (e.g., scratch scripts, temporary logs).
+- Purge outdated screenshot evidence and temporary images from previous runs so that every generated report contains fresh, isolated evidence for that specific test run only.
+- Clean up stale interim reports or temporary JSON state files before initiating new test execution.
+
 ## Safety Rules
 
 Blocked by default: delete, archive, payment, real message send, bulk update, settings changes, billing/subscription, invites, sensitive export, and real customer destructive edits.
